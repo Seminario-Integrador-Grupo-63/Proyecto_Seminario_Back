@@ -24,12 +24,14 @@ async def root():
 
 @app.get("/qrcode")
 async def generate_qr_code():
-    # url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    url = 'http://192.168.100.52:3000'
-    qr = qrcode.QRCode(version = 1, box_size = 8, border = 8)
+    url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    # url = 'http://192.168.100.52:3000'
+    # url = "https://www.google.com/"
+    qr = qrcode.QRCode(version = 1, box_size = 12, border = 1)
     qr.add_data(url)
     qr.make()
-    img = qr.make_image(fill_color = 'black', back_color = 'white')
+    img = qr.make_image(fill_color = 'black', back_color='white')
+
     bytes = io.BytesIO()
     img.save(bytes)
     retval = bytes.getvalue()
