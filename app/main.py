@@ -2,6 +2,7 @@ import io
 from fastapi import FastAPI, Response
 import qrcode
 from fastapi.middleware.cors import CORSMiddleware
+import base64
 
 app = FastAPI()
 origins = [
@@ -23,7 +24,8 @@ async def root():
 
 @app.get("/qrcode")
 async def generate_qr_code():
-    url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    # url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    url = 'http://192.168.100.52:3000'
     qr = qrcode.QRCode(version = 1, box_size = 8, border = 8)
     qr.add_data(url)
     qr.make()
@@ -31,4 +33,9 @@ async def generate_qr_code():
     bytes = io.BytesIO()
     img.save(bytes)
     retval = bytes.getvalue()
-    return Response(content = retval, media_type="image/png")
+
+    base64_image = base64.b64encode(retval).decode('utf-8')  # Encode the image in Base64
+
+    return base64_image
+
+    # return Response(content = retval, media_type="image/png")
