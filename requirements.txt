@@ -4,6 +4,8 @@ uvicorn
 sqlmodel
 httpx
 qrcode
+psycopg2
+enum34
 
 #For tests
 pytest==7.2.0

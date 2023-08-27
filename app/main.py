@@ -4,6 +4,8 @@ import qrcode
 from fastapi.middleware.cors import CORSMiddleware
 import base64
 
+from models import create_db_and_tables
+
 app = FastAPI()
 origins = [
     "http://localhost",
@@ -17,6 +19,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+create_db_and_tables()
 
 @app.get("/")
 async def root():
