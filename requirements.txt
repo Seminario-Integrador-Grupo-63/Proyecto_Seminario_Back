@@ -6,6 +6,7 @@ httpx
 qrcode
 psycopg2
 enum34
+redis==4.5.5
 
 #For tests
 pytest==7.2.0
