@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import StrEnum
 from typing import Optional
 
@@ -20,12 +21,12 @@ class Restaurant(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
     last_name: str = Field(...)
-    user: Optional[int] = Field(foreign_key="user.id")
+    user: Optional[int] = Field(foreign_key="user.id") #Sacar el optional cuando este terminado la creacion d eusuario
 
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
-    restaurant: Optional[int] = Field(foreign_key="restaurant.id")
+    restaurant: Optional[int] = Field(foreign_key="restaurant.id") #Sacar el optional cuando este terminado la creacion d eusuario
 
 class Dish(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -33,7 +34,7 @@ class Dish(SQLModel, table=True):
     description: Optional[bytes] = None #A DEFINIR (LA DESCRIPCION E IMAGEN SON OBLITARIAS O NO?)
     image: Optional[bytes] = None
     preparation_time: Optional[int]
-    category: Optional[int] = Field(foreign_key="category.id")
+    category: int = Field(foreign_key="category.id")
     price: float = Field(...)
 
 class SideDish(SQLModel, table=True):
@@ -45,34 +46,29 @@ class SideDish(SQLModel, table=True):
 
 class SideDishOptions(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    dish: Optional[int] = Field(foreign_key="dish.id")
-    side_dish: Optional[int] = Field(foreign_key="sidedish.id")
+    dish: int = Field(foreign_key="dish.id")
+    side_dish: Optional[int] = Field(foreign_key="sidedish.id", nullable=True)
 
 class Table(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     is_booked: bool = Field(default=False)
-    qr_id: str = Field(...) #uuid4 for a unique qr code id
+    qr_id: str | None = "" #uuid4 for a unique qr code id
+    restaurant: Optional[int] = Field(foreign_key="restaurant.id") #Sacar el optional cuando este terminado la creacion d eusuario
 
 class Order(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    table: Optional[int] = Field(foreign_key="table.id")
+    table: int = Field(foreign_key="table.id")
     total: float = Field(default=0.0)
-    created_at: str # ADD EXTRA PYDANTIC TYPES FOR DATETIME
+    created_at: datetime = Field(...)
     state: OrderState = Field(default=OrderState.processing)
 
 class OrderDetail(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    dish: Optional[int] = Field(foreign_key="dish.id")
-    SideDish: Optional[int] = Field(foreign_key="sidedish.id")
+    dish_selected: int = Field(foreign_key="sidedishoptions.id")
     order: Optional[int] = Field(foreign_key="order.id")
     sub_total: float = Field(...)
+    customer: str = Field(...)
 
-#create db and engine
-db_url = "postgresql://admin:admin@postgres:5432/root"
-
-engine = create_engine(db_url, echo=True)
-
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
+class Waiter(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(...)

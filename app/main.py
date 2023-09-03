@@ -4,7 +4,10 @@ import qrcode
 from fastapi.middleware.cors import CORSMiddleware
 import base64
 
-from models import create_db_and_tables
+import redis
+
+from services.db_service import db_service
+from controlers import categories, dishes, sidedishes, tables, sidedish_options, orders
 
 app = FastAPI()
 origins = [
@@ -20,28 +23,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-create_db_and_tables()
+app.include_router(categories.category_router)
+app.include_router(dishes.dish_router)
+app.include_router(sidedishes.sidedish_router)
+app.include_router(tables.table_router)
+app.include_router(sidedish_options.sidedish_option_router)
+app.include_router(orders.order_router)
+
+db_service.create_db_and_tables()
+
+redis_client = redis.Redis(host="redis", port=6379)
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
-@app.get("/qrcode")
-async def generate_qr_code():
-    url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    # url = 'http://192.168.100.52:3000'
-    # url = "https://www.google.com/"
-    qr = qrcode.QRCode(version = 1, box_size = 12, border = 1)
-    qr.add_data(url)
-    qr.make()
-    img = qr.make_image(fill_color = 'black', back_color='white')
-
-    bytes = io.BytesIO()
-    img.save(bytes)
-    retval = bytes.getvalue()
-
-    base64_image = base64.b64encode(retval).decode('utf-8')  # Encode the image in Base64
-
-    return base64_image
-
-    # return Response(content = retval, media_type="image/png")

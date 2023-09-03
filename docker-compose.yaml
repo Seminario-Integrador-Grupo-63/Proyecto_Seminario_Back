@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   fastapi:
+    container_name: QResto_back
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -15,6 +16,7 @@ services:
       - postgres
 
   postgres:
+    container_name: QResto_db
     image: postgres
     restart: always
     ports:
