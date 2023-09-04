@@ -7,7 +7,6 @@ qrcode
 psycopg2
 enum34
 redis==4.5.5
-pickle
 
 #For tests
 pytest==7.2.0
