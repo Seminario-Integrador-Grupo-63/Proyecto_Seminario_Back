@@ -1,0 +1,7 @@
+[run]
+omit = app/main.py
+
+[html]
+directory = tests/htmlcov
+[term]
+directory = tests
