@@ -7,7 +7,7 @@ import base64
 import redis
 
 from services.db_service import db_service
-from controlers import categories, dishes, sidedishes, tables, sidedish_options, orders
+from controlers import categories, dishes, sidedishes, tables, sidedish_options, orders, mock
 
 app = FastAPI()
 origins = [
@@ -29,6 +29,7 @@ app.include_router(sidedishes.sidedish_router)
 app.include_router(tables.table_router)
 app.include_router(sidedish_options.sidedish_option_router)
 app.include_router(orders.order_router)
+app.include_router(mock.mock_router)
 
 db_service.create_db_and_tables()
 
