@@ -10,6 +10,7 @@ class OrderState(StrEnum):
     preparation = "preparation"
     cancelled = "cancelled"
     delivered = "delivered"
+    closed = "closed"
 
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -68,6 +69,7 @@ class OrderDetail(SQLModel, table=True):
     order: Optional[int] = Field(foreign_key="order.id")
     sub_total: float = Field(...)
     customer: str = Field(...)
+    observation: str = Field(default="")
 
 class Waiter(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

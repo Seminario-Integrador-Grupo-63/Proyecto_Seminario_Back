@@ -48,5 +48,16 @@ class RedisService:
     @classmethod
     def delete_data(self, key: str):
         self.redis_client.delete(key)
+    
+    @classmethod
+    def remove_from_list(self, key:str, data):
+        stored_data = self.redis_client.get(key)
+        stored_data: list = pickle.loads(stored_data)
+        stored_data.remove(data)
+        encoded_data = pickle.dumps(stored_data)
+
+        self.redis_client.set(key, encoded_data)
+
+        return stored_data
 
 redis_service = RedisService()
