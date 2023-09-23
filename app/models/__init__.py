@@ -43,12 +43,12 @@ class SideDish(SQLModel, table=True):
     name: str = Field(...)
     description: Optional[bytes] = None 
     image: Optional[bytes] = None
-    extra_price: float = Field(nullable=True, default=0.0)
 
 class SideDishOptions(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     dish: int = Field(foreign_key="dish.id")
     side_dish: Optional[int] = Field(foreign_key="sidedish.id", nullable=True)
+    extra_price: float = Field(nullable=True, default=0.0)
 
 class Table(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

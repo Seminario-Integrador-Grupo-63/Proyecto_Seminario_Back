@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 from models import Dish
+from models.dish_model import UpdatePriceData
 from services.db_service import db_service
-from services.dish_service import create_new_dish, get_dish_data
+from services.dish_service import *
 
 dish_router = APIRouter(prefix="/dish", tags=["Dishes"])
 
@@ -20,3 +21,7 @@ async def create_dish(dish_body: Dish):
 @dish_router.put("/")
 async def update_dish(dish_body: Dish):
     return db_service.update_object(Dish, dish_body)
+
+@dish_router.post("/update_prices")
+async def update_prices(body: UpdatePriceData):
+    return await update_dish_prices(update_data=body)
