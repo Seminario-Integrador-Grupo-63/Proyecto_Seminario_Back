@@ -7,6 +7,7 @@ qrcode
 psycopg2
 enum34
 redis==4.5.5
+Pillow
 
 #For tests
 pytest==7.2.0
