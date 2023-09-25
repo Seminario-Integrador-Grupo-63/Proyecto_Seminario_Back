@@ -3,6 +3,7 @@ import io
 import uuid
 
 import qrcode
+from PIL import Image
 from sqlmodel import select
 from models.table_models import QRcodeData
 
@@ -16,7 +17,24 @@ async def generate_qrcode(table_id: int):
     qr = qrcode.QRCode(version = 1, box_size = 12, border = 1)
     qr.add_data(url)
     qr.make()
-    img = qr.make_image(fill_color = 'black', back_color='white')
+
+    # Logo
+    logo_link = '../resources/brujita-fondo-crema.png' # here goes the location of the chosen logo
+    logo = Image.open(logo_link)
+    basewidth = 100
+    wpercent = (basewidth / float(logo.size[0]))
+    hsize = int((float(logo.size[1]) * float(wpercent)))
+    logo = logo.resize((basewidth, hsize)) # It doesn't work if you don't resize it lol
+
+
+    fill = 'black' # Color of the QR itself
+    back = 'white' # Color of the background
+    img = qr.make_image(fill_color = fill, back_color=back).convert('RGB')
+
+    # Middle position for the logo and fixing them together
+    pos = ((img.size[0] - logo.size[0]) // 2,
+           (img.size[1] - logo.size[1]) // 2)
+    img.paste(logo, pos)
 
     bytes = io.BytesIO()
     img.save(bytes)
