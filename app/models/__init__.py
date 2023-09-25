@@ -12,17 +12,22 @@ class OrderState(StrEnum):
     delivered = "delivered"
     closed = "closed"
 
-class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    user: str = Field(...)
-    password: str = Field(...)
-    email: str = Field(...)
+class UserRolesEnum(StrEnum):
+    admin = "admin"
+    employee = "employee"
 
 class Restaurant(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
     last_name: str = Field(...)
-    user: Optional[int] = Field(foreign_key="user.id") #Sacar el optional cuando este terminado la creacion d eusuario
+
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user: str = Field(unique=True)
+    password: str = Field(...)
+    email: str = Field(...)
+    role: UserRolesEnum = Field(...)
+    restaurant: Optional[int] = Field(foreign_key="restaurant.id")
 
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

@@ -9,6 +9,10 @@ enum34
 redis==4.5.5
 Pillow
 
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+
 #For tests
 pytest==7.2.0
 pytest-cov==2.11.1
