@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from models import Order, OrderDetail
 from services.db_service import db_service
-from services.order_service import confirm_order, get_order_details, save_order_detail_to_cache
+from services.order_service import *
 
 order_router = APIRouter(prefix="/order", tags=["Orders"])
 
@@ -11,7 +11,7 @@ async def get_orders():
 
 @order_router.get("/{id}")
 async def get_order(id: int):
-    return db_service.get_object_by_id(Order, id)
+    return get_full_order(order_id=id)
 
 @order_router.post("/{table_id}")
 async def create_order(table_id: str):
@@ -24,3 +24,7 @@ async def add_order_detail(table_code:str, body: OrderDetail):
 @order_router.get("/detail/{table_code}")
 async def get_details(table_code:str):
     return await get_order_details(table_code)
+
+@order_router.delete("/detail/{tablr_code}")
+async def remove_detail(table_dode: str, body: OrderDetail):
+    return await remove_order_detail(table_code=table_dode, order_detail=body)

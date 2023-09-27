@@ -3,10 +3,12 @@ import io
 import uuid
 
 import qrcode
+from PIL import Image
+from sqlmodel import select
 from models.table_models import QRcodeData
 
 from services.db_service import db_service
-from models import Table    
+from models import Order, OrderState, Table    
 
 async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
@@ -15,7 +17,24 @@ async def generate_qrcode(table_id: int):
     qr = qrcode.QRCode(version = 1, box_size = 12, border = 1)
     qr.add_data(url)
     qr.make()
-    img = qr.make_image(fill_color = 'black', back_color='white')
+
+    # Logo
+    logo_link = '../resources/brujita-fondo-crema.png' # here goes the location of the chosen logo
+    logo = Image.open(logo_link)
+    basewidth = 100
+    wpercent = (basewidth / float(logo.size[0]))
+    hsize = int((float(logo.size[1]) * float(wpercent)))
+    logo = logo.resize((basewidth, hsize)) # It doesn't work if you don't resize it lol
+
+
+    fill = 'black' # Color of the QR itself
+    back = 'white' # Color of the background
+    img = qr.make_image(fill_color = fill, back_color=back).convert('RGB')
+
+    # Middle position for the logo and fixing them together
+    pos = ((img.size[0] - logo.size[0]) // 2,
+           (img.size[1] - logo.size[1]) // 2)
+    img.paste(logo, pos)
 
     bytes = io.BytesIO()
     img.save(bytes)
@@ -29,4 +48,11 @@ async def update_uuid(table_id: int, uuid_code: str):
     table_data: Table = db_service.get_object_by_id(Table, table_id)
     table_data.qr_id = uuid_code
     return db_service.update_object(Table, table_data)
+
+async def get_current_orders(table_code: str):
+    statement = select(Table).where(Table.qr_id == table_code)
+    table: Table = db_service.get_with_filters(statement)[0]
+
+    statement = select(Order).where(Order.table == table.id).where(Order.state != OrderState.closed).where(Order.state != OrderState.cancelled)
+    return db_service.get_with_filters(statement)
     

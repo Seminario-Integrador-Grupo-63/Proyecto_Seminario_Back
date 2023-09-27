@@ -4,8 +4,6 @@ import qrcode
 from fastapi.middleware.cors import CORSMiddleware
 import base64
 
-import redis
-
 from services.db_service import db_service
 from controlers import categories, dishes, sidedishes, tables, sidedish_options, orders, mock
 
@@ -32,8 +30,6 @@ app.include_router(orders.order_router)
 app.include_router(mock.mock_router)
 
 db_service.create_db_and_tables()
-
-redis_client = redis.Redis(host="redis", port=6379)
 
 @app.get("/")
 async def root():

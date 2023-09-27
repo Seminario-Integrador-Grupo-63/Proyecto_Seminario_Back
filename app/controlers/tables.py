@@ -2,7 +2,7 @@
 from fastapi import APIRouter
 from models import Table
 from services.db_service import db_service
-from services.table_service import generate_qrcode, update_uuid
+from services.table_service import *
 
 table_router = APIRouter(prefix="/table", tags=["Tables"])
 
@@ -29,4 +29,10 @@ async def get_qrcode(table_id: int):
 @table_router.post("/{table_id}/qrcode")
 async def update_qrcode(table_id:int, uuid_code: str):
     return await update_uuid(table_id=table_id, uuid_code=uuid_code)
+
+@table_router.get("/{table_code}/orders")
+async def get_table_orders(table_code:str):
+    return await get_current_orders(table_code=table_code)
+
+
 
