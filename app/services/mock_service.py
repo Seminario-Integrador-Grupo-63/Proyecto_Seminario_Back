@@ -15,15 +15,15 @@ drinks_names = ["Cocucha bien fria", "Priteado", "Prity", "Fernandito", "Birrita
 
 def create_mocks_in_db():
 
-    #Crear usuario
-    user_1 = User(user = "admin", password = "admin", email = "admin@seminario.com")
-    db_service.create_object(user_1)
-
     #Crear restaurante
-    statement = select(User).where(User.user == "admin")
-    user: User = db_service.get_with_filters(statement)[0]
-    restaurant_1 = Restaurant(name = "Pepe", last_name = "Argento", user = user.id)
+    restaurant_1 = Restaurant(name = "Pepe", last_name = "Argento")
     db_service.create_object(restaurant_1)
+
+    #Crear usuario
+    statement = select(Restaurant).where(Restaurant.name == "Pepe")
+    restaurant: Restaurant = db_service.get_with_filters(statement)[0]
+    user_1 = User(user = "admin", password = "admin", email = "admin@seminario.com", role = "admin", restaurant = restaurant.id)
+    db_service.create_object(user_1)
 
     #Crear categorias
     statement = select(Restaurant).where(Restaurant.name == "Pepe")
@@ -76,8 +76,11 @@ def create_mocks_in_db():
     #Adjuntar guarniciones
         side_dishes: SideDish = db_service.get_list_from_db(SideDish)
         dishes: Dish = db_service.get_list_from_db(Dish)
-        side_dish_option_1 = SideDishOptions(dish = random.choice(dishes).id, side_dish = random.choice(side_dishes).id)
-        side_dish_option_2 = SideDishOptions(dish = random.choice(dishes).id, side_dish = random.choice(side_dishes).id)
+        selected_dish_1 = random.choice(dishes)
+        selected_dish_2 = random.choice(dishes)
+
+        side_dish_option_1 = SideDishOptions(dish = selected_dish_1.id, side_dish = random.choice(side_dishes).id)
+        side_dish_option_2 = SideDishOptions(dish = selected_dish_2.id, side_dish = random.choice(side_dishes).id)
         db_service.create_object(side_dish_option_1)
         db_service.create_object(side_dish_option_2)
 
@@ -97,11 +100,12 @@ def create_mocks_in_db():
         dishes: Dish = db_service.get_list_from_db(Dish)
         dish = random.choice(dishes)
 
-        db_service.create_object(Order(table = random.choice(tables).id , total = dish.price, created_at = datetime.now(), state = random.choice(order_states_names)))
+        selected_table_1 = random.choice(tables)
+        db_service.create_object(Order(table = selected_table_1.id , total = dish.price, created_at = datetime.now(), state = random.choice(order_states_names)))
 
     #Crear detalles de ordenes
+
+        statement = "SELECT MAX(id) FROM order"
+        order: Category = db_service.get_with_filters(statement)[0]
     
-        statement = "SELECT MAX(id) FROM pedidos "
-        bebida: Category = db_service.get_with_filters(statement)[0]
-    
-        db_service.create_object(OrderDetail(dish_selected = dish.id, order = i, subtotal = dish.price, customer = random.choice(names)))
+        db_service.create_object(OrderDetail(dish_selected = dish.id, order = order.id, subtotal = dish.price, customer = random.choice(names)))
