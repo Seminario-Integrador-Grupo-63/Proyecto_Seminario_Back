@@ -26,7 +26,7 @@ async def confirm_order(table_code: str):
     table: Table = db_service.get_with_filters(statement)[0]
     detail_list = redis_service.get_data(table_code)
 
-    order = Order(table=table.id, created_at=datetime.now())
+    order = Order(table=table.id, created_at=datetime.now(), restaurant=table.restaurant)
     order: Order = db_service.create_object(order) 
 
     for detail in detail_list:

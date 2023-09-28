@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Header
 from models import Dish
 from models.dish_model import UpdatePriceData
 from services.db_service import db_service
@@ -6,9 +6,9 @@ from services.dish_service import *
 
 dish_router = APIRouter(prefix="/dish", tags=["Dishes"])
 
-@dish_router.get("/", response_model=list[Dish])
-async def get_dishes():
-    return db_service.get_list_from_db(Dish)
+@dish_router.get("/}", response_model=list[Dish])
+async def get_dishes(restaurant_id: int = Header(default=None), category_id: int = Header(default=None)):
+    return await filter_dish(restaurant_id=restaurant_id, category_id=category_id)
 
 @dish_router.get("/{dish_id}")
 async def get_dish(dish_id: int):

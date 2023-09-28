@@ -44,3 +44,12 @@ async def update_dish_prices(update_data: UpdatePriceData):
         return await update_category_dishes(update_data)
     else:
         ...
+
+async def filter_dish(restaurant_id: int | None, category_id: int | None):
+    if restaurant_id:
+        statement = select(Dish).where(Dish.restaurant == restaurant_id)
+    elif category_id:
+            statement = select(Dish).where(Dish.category == category_id)
+    else:
+        raise Exception("No id provided")
+    return db_service.get_with_filters(statement)

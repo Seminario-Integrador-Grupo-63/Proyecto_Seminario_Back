@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Header
 from models import Table
 from services.db_service import db_service
 from services.table_service import *
@@ -7,8 +7,9 @@ from services.table_service import *
 table_router = APIRouter(prefix="/table", tags=["Tables"])
 
 @table_router.get("/", response_model=list[Table])
-async def get_tables():
-    return db_service.get_list_from_db(Table)
+async def get_tables(restaurant_id: int = Header(...)):
+    statement = select(Table).where(Table.restaurant == restaurant_id)
+    return db_service.get_with_filters(statement)
 
 @table_router.get("/{id}")
 async def get_table(id: int):

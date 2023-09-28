@@ -27,12 +27,12 @@ class User(SQLModel, table=True):
     password: str = Field(...)
     email: str = Field(...)
     role: UserRolesEnum = Field(...)
-    restaurant: Optional[int] = Field(foreign_key="restaurant.id")
+    restaurant: int = Field(foreign_key="restaurant.id")
 
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
-    restaurant: Optional[int] = Field(foreign_key="restaurant.id") #Sacar el optional cuando este terminado la creacion d eusuario
+    restaurant: int = Field(foreign_key="restaurant.id") 
 
 class Dish(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -42,12 +42,14 @@ class Dish(SQLModel, table=True):
     preparation_time: Optional[int]
     category: int = Field(foreign_key="category.id")
     price: float = Field(...)
+    restaurant: int = Field(foreign_key="restaurant.id") #Este no deberia ir pero es mas facil filrar asi
 
 class SideDish(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
     description: Optional[bytes] = None 
     image: Optional[bytes] = None
+    restaurant: int = Field(foreign_key="restaurant.id")
 
 class SideDishOptions(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -67,6 +69,7 @@ class Order(SQLModel, table=True):
     total: float = Field(default=0.0)
     created_at: datetime = Field(...)
     state: OrderState = Field(default=OrderState.processing)
+    restaurant: int = Field(foreign_key="restaurant.id")
 
 class OrderDetail(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
