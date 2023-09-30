@@ -4,9 +4,6 @@ from sqlmodel import SQLModel, Session, create_engine, select
 
 from models import Category
 
-
-
-
 class DB_Service:
     db_url = "postgresql://admin:admin@QResto_db:5432/root"
 
