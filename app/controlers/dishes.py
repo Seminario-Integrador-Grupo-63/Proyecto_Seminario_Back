@@ -6,7 +6,7 @@ from services.dish_service import *
 
 dish_router = APIRouter(prefix="/dish", tags=["Dishes"])
 
-@dish_router.get("/}", response_model=list[Dish])
+@dish_router.get("/", response_model=list[Dish])
 async def get_dishes(restaurant_id: int = Header(default=None), category_id: int = Header(default=None)):
     return await filter_dish(restaurant_id=restaurant_id, category_id=category_id)
 
