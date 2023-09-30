@@ -5,27 +5,26 @@ import uuid
 import qrcode
 from PIL import Image
 from sqlmodel import select
-from models.table_models import QRcodeData
+from app.models.table_models import QRcodeData
 
-from services.db_service import db_service
-from models import Order, OrderState, Table    
+from app.services.db_service import db_service
+from app.models import Order, OrderState, Table
 
 async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
     url = f'http://192.168.100.52:3000/{uuid_code}' #cambiar cuando tengamos variables de entorno
 
-    qr = qrcode.QRCode(version = 1, box_size = 12, border = 1)
+    qr = qrcode.QRCode(version=4, box_size=140, border=2)
     qr.add_data(url)
     qr.make()
 
     # Logo
-    logo_link = '../resources/brujita-fondo-crema.png' # here goes the location of the chosen logo
-    logo = Image.open(logo_link)
-    basewidth = 100
-    wpercent = (basewidth / float(logo.size[0]))
-    hsize = int((float(logo.size[1]) * float(wpercent)))
-    logo = logo.resize((basewidth, hsize)) # It doesn't work if you don't resize it lol
-
+    logofile = '../resources/logo-qr.png' # here goes the location of the chosen logo
+    logo = Image.open(logofile)
+    width = 1300
+    widthpercentage = (width / float(logo.size[0]))
+    height = int((float(logo.size[1]) * float(widthpercentage)))
+    logo = logo.resize((width, height))
 
     fill = 'black' # Color of the QR itself
     back = 'white' # Color of the background
