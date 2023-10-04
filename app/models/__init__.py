@@ -32,6 +32,7 @@ class User(SQLModel, table=True):
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
+    image: Optional[str] = Field(default="")
     restaurant: int = Field(foreign_key="restaurant.id") 
 
 class Dish(SQLModel, table=True):
