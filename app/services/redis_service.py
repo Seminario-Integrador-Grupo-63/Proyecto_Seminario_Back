@@ -22,7 +22,7 @@ class RedisService:
         return stored_data
     
     @classmethod
-    def save_list(self, key:str, data):
+    def save_list(self, key:str, data: any, time:int | None = None):
         stored_data = self.redis_client.get(key)
         if stored_data:
             stored_data = pickle.loads(stored_data)
@@ -33,7 +33,7 @@ class RedisService:
 
         encoded_data = pickle.dumps(stored_data)
 
-        self.redis_client.set(key, encoded_data)
+        self.redis_client.set(key, encoded_data, time) if time else self.redis_client.set(key, encoded_data)
 
         return stored_data
 
@@ -41,7 +41,7 @@ class RedisService:
     def get_data(self, key:str):
         data = self.redis_client.get(key)
         if data:
-            return pickle.dumps(data)
+            return pickle.loads(data)
         else:
             return None
     

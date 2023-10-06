@@ -23,5 +23,9 @@ async def update_dish(dish_body: Dish):
     return db_service.update_object(Dish, dish_body)
 
 @dish_router.post("/update_prices")
-async def update_prices(body: UpdatePriceData):
-    return await update_dish_prices(update_data=body)
+async def update_prices(body: UpdatePriceData, restaurant_id: int = Header(default=None)):
+    return await update_dish_prices(update_data=body, restaurant_id=restaurant_id)
+
+@dish_router.post("/update_prices/{uuid_code}")
+async def confirm_prices(uuid_code: str):
+    return await confirm_new_prices(uuid_code)

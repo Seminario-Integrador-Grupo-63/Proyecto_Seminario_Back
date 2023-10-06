@@ -5,9 +5,6 @@ import uuid
 import qrcode
 from PIL import Image
 from sqlmodel import select
-# from app.models.table_models import QRcodeData
-# from app.services.db_service import db_service
-# from app.models import Order, OrderState, Table
 
 from models.table_models import QRcodeData
 from services.db_service import db_service
