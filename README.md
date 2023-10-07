@@ -65,3 +65,16 @@
 - SI-XX es la Key que se encuentra en cada card de trelo
 
 - Antes de empezar a desarrollar correr todos los tests y notificar si alguno fallo
+
+## Migraciones de la DB
+- Al iniciar el proyecto ya no se genera la DB automaticamente se tiene que correr el comando (dentro del contenedor)
+
+- `python -m alembic upgrade head`
+
+- Para agregar una nueva tabla a la DB importar el modelo correspondiente en el archivo `migrations/env.py:19`
+
+- En el caso de haber hecho un cambio en una tabla o luego de haber creado una
+
+- Correr el comando ` python -m alembic revision --autogenerate -m "Aca un comentario sobre de que fue la migracion" `
+
+- Ejecutar la migracion `python -m alembic upgrade head`

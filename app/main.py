@@ -31,7 +31,7 @@ app.include_router(sidedish_options.sidedish_option_router)
 app.include_router(orders.order_router)
 app.include_router(mock.mock_router)
 
-db_service.create_db_and_tables()
+#db_service.create_db_and_tables()
 
 @app.get("/")
 async def root():

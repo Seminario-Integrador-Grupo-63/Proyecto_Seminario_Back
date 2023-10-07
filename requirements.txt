@@ -1,7 +1,6 @@
 #For development
 fastapi
 uvicorn
-sqlmodel
 httpx
 qrcode
 psycopg2
@@ -12,6 +11,9 @@ Pillow
 python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
+
+sqlmodel
+alembic
 
 #For tests
 pytest==7.2.0
