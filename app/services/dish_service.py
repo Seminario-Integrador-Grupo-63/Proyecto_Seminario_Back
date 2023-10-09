@@ -76,16 +76,17 @@ async def get_new_prices(update_data: UpdatePriceData, dish_list: list[Dish]):
 
         for option in sidedish_option_list:
             new_option_price = await get_new_price(update_data, option.extra_price)
-            side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
-            option.extra_price = new_option_price
-            option_price_data = OptionPriceData(option_name=side_dish.name, option_price=option.extra_price)
-            options_prices_list.append(option_price_data)
+            if option.side_dish:
+                side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
+                option.extra_price = new_option_price
+                option_price_data = OptionPriceData(option_name=side_dish.name, option_price=option.extra_price)
+                options_prices_list.append(option_price_data)
 
-        dish_data = DishPriceData(dish_name=dish.name,dish_price=dish.price, option_prices=options_prices_list)
-        dish_prices_list.append(dish_data)
+                dish_data = DishPriceData(dish_name=dish.name,dish_price=dish.price, option_prices=options_prices_list)
+                dish_prices_list.append(dish_data)
 
-        cache_data = UpdatePrideCacheData(dish=dish, options=sidedish_option_list)
-        dish_prices_cache.append(cache_data)
+                cache_data = UpdatePrideCacheData(dish=dish, options=sidedish_option_list)
+                dish_prices_cache.append(cache_data)
     
     uuid_code = await cache_price_data(dish_prices_cache)
     return DishPricesDTO(prices_code=uuid_code, dish_prices=dish_prices_list)
