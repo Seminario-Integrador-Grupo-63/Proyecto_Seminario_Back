@@ -1,0 +1,4 @@
+main.cpython-310.pyc
+*.pyc
+__pycache__
+/.idea
