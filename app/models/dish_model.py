@@ -8,9 +8,15 @@ class UpdatePriceAction(StrEnum):
     increase = "increase"
     decrease = "decrease"
 
+class SideDishData(BaseModel):
+    side_dish_id: int
+    side_dish_name: str
+    side_dish_description: str
+    extra_price: str
+
 class DishData(BaseModel):
     dish: Dish = Field(...)
-    options: list[SideDishOptions] = Field(...)
+    options: list[SideDishData] = Field(...)
 
 class UpdatePriceData(BaseModel):
     percentage: float = Field(...)

@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from sqlalchemy import select
 
 from models import Restaurant, User, UserRolesEnum
-from models.security_models import RegistrationData
+from models.security_models import RegistrationData, UserData
 from services.db_service import db_service
 
 async def create_admin(registration_data: RegistrationData):
@@ -24,7 +24,7 @@ async def create_employee(registration_data: RegistrationData):
     try:
         user: User = registration_data.user_data
         restaurant_data: Restaurant = registration_data.restorant_data
-        user.restaurant = restaurant.id
+        user.restaurant = restaurant_data.id
         db_service.create_object(user)
     except Exception as e:
         return e

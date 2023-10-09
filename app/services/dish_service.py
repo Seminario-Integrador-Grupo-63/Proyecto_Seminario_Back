@@ -2,7 +2,7 @@
 import uuid
 from sqlmodel import select
 from models import Dish, SideDish, SideDishOptions
-from models.dish_model import DishData, DishPriceData, DishPricesDTO, OptionPriceData, UpdatePriceAction, UpdatePriceData, UpdatePrideCacheData
+from models.dish_model import DishData, DishPriceData, DishPricesDTO, OptionPriceData, SideDishData, UpdatePriceAction, UpdatePriceData, UpdatePrideCacheData
 from services.db_service import db_service
 from services.redis_service import redis_service
 
@@ -15,9 +15,17 @@ async def create_new_dish(dish: Dish):
 
 async def get_dish_data(dish_id: int):
     statement = select(SideDishOptions).where(SideDishOptions.dish == dish_id) 
-    options = db_service.get_with_filters(statement)
+    options: list[SideDishOptions] = db_service.get_with_filters(statement)
     dish = db_service.get_object_by_id(Dish, dish_id)
-    return DishData(dish=dish, options=options)
+    side_dish_list = []
+    for option in options:
+        side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
+        side_dish_data = SideDishData(side_dish_id= side_dish.id, 
+                                      side_dish_name=side_dish.name,
+                                      side_dish_description=side_dish.description,
+                                      extra_price=option.extra_price)
+        side_dish_list.append(side_dish_data)
+    return DishData(dish=dish, options=side_dish_list)
 
 async def update_all_dishes(update_data: UpdatePriceData):
     ...

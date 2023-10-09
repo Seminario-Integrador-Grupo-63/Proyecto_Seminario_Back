@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Header
 
 from models import User
-from models.security_models import *
+from models.security_models import UserData, RegistrationData
 from services.security_service import *
 
 security_router = APIRouter(tags=["Security"])

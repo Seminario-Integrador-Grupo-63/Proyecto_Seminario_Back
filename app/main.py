@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import base64
 
 from services.db_service import db_service
-from controlers import categories, dishes, sidedishes, tables, sidedish_options, orders, mock
+from controlers import categories, dishes, sidedishes, tables, sidedish_options, orders, mock, security
 
 app = FastAPI()
 origins = [
@@ -30,7 +30,7 @@ app.include_router(tables.table_router)
 app.include_router(sidedish_options.sidedish_option_router)
 app.include_router(orders.order_router)
 app.include_router(mock.mock_router)
-
+app.include_router(security.security_router)
 #db_service.create_db_and_tables()
 
 @app.get("/")

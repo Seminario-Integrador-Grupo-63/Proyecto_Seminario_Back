@@ -9,6 +9,11 @@ from sqlmodel import select
 from models.table_models import QRcodeData
 from services.db_service import db_service
 from models import Order, OrderState, Table
+from services.order_service import get_full_order
+
+async def get_table_by_code(table_code: str):
+    statement = select(Table).where(Table.qr_id == table_code)
+    return db_service.get_with_filters(statement)[0]
 
 async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
@@ -49,9 +54,15 @@ async def update_uuid(table_id: int, uuid_code: str):
     return db_service.update_object(Table, table_data)
 
 async def get_current_orders(table_code: str):
-    statement = select(Table).where(Table.qr_id == table_code)
-    table: Table = db_service.get_with_filters(statement)[0]
+    table: Table = get_table_by_code(table_code)
 
     statement = select(Order).where(Order.table == table.id).where(Order.state != OrderState.closed).where(Order.state != OrderState.cancelled)
     return db_service.get_with_filters(statement)
+
+async def generate_billing(table_code: str):
+    orders: list[Order] = await get_current_orders(table_code)
+    full_orders_list = []
+    for order in orders:
+        full_orders_list.append(get_full_order(order.id))
     
+    return full_orders_list
