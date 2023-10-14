@@ -24,7 +24,7 @@ async def generate_qrcode(table_id: int):
     qr.make()
 
     # Logo
-    logofile = '../resources/logo-qr.png' # here goes the location of the chosen logo
+    logofile = 'logo-qr.png' # here goes the location of the chosen logo
     logo = Image.open(logofile)
     width = 1300
     widthpercentage = (width / float(logo.size[0]))
