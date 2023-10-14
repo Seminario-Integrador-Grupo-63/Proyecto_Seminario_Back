@@ -7,7 +7,10 @@ from models import Dish, Order, OrderDetail, OrderState, SideDish
 
 class FullOrderData(BaseModel):
     order: Order
-    order_details: list[OrderDetail]
+    order_details: list[OrderDetail] = Field(alias="orderDetail")
+
+    class Config:
+        allow_population_by_field_name = True
 
 class OrderDetailData(BaseModel):
     ammount: int
