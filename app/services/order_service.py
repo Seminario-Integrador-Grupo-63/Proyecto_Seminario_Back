@@ -9,12 +9,12 @@ from services.redis_service import redis_service
 
 
 async def save_order_detail_to_cache(table_code:str, order_detail: OrderDetail):
-    detail_list = redis_service.save_list(table_code, order_detail.dict())
-    customer_set = redis_service.save_set(f"{table_code}_costumer", order_detail.customer)
+    detail_list = redis_service.save_list(table_code, order_detail)
+    customer_set, _ = redis_service.save_set(f"{table_code}_costumer", order_detail.customer_name)
     return detail_list
 
 async def remove_order_detail(table_code: str, order_detail: OrderDetail):
-    return redis_service.remove_from_list(table_code, order_detail.dict())
+    return redis_service.remove_from_list(table_code, order_detail)
 
 async def get_order_details(table_code:str):
     return redis_service.get_data(table_code)

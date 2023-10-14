@@ -13,13 +13,17 @@ class RedisService:
         else:
             stored_data = set() 
         
-        stored_data.add(data)
+        if data in stored_data:
+            saved = False
+        else:
+            saved = True
+            stored_data.add(data)
 
-        encoded_data = pickle.dumps(stored_data)
+            encoded_data = pickle.dumps(stored_data)
 
-        self.redis_client.set(key, encoded_data)
+            self.redis_client.set(key, encoded_data)
 
-        return stored_data
+        return stored_data, saved
     
     @classmethod
     def save_list(self, key:str, data: any, time:int | None = None):

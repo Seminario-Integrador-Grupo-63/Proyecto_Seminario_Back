@@ -1,6 +1,6 @@
 #create db and engine
 from fastapi import HTTPException
-from sqlmodel import SQLModel, Session, create_engine, select
+from sqlmodel import SQLModel, Session, create_engine, select, delete
 
 from models import Category
 
@@ -54,5 +54,12 @@ class DB_Service:
         with Session(self.engine) as session:
             result = session.exec(statement).all()
             return result
+    
+    @classmethod
+    def delete_dable(self, model:SQLModel):
+        with Session(self.engine) as session:
+            statement = delete(model)
+            result = session.exec(statement)
+            session.commit()
         
 db_service = DB_Service()

@@ -17,6 +17,9 @@ drinks_names = ["Cocucha bien fria", "Priteado", "Prity", "Fernandito", "Birrita
 images = [image1]
 
 def create_mocks_in_db():
+    models_list = [User,OrderDetail, SideDishOptions, Dish, SideDish, Waiter, Order,Table, Category, Restaurant]
+    for model in models_list:
+        db_service.delete_dable(model)
 
     name = random.choice(names)
     lastname = random.choice(lastanames)
@@ -92,18 +95,18 @@ def create_mocks_in_db():
 
 
     #Crear mesas
-    for i in range(15):
+    for i in range(1, 15):
         table_1 = Table(restaurant = restaurant.id)
         db_service.create_object(table_1)
 
     #Crear mosos
-    for i in range(3):
+    for i in range(1, 3):
         waiter_name = f'{random.choice(names)} {random.choice(lastanames)}'
         waiter_1 = Waiter(name = waiter_name )
         db_service.create_object(waiter_1)
 
     #Cear ordenes
-    for i in range(10):
+    for i in range(1, 10):
         statement = select(Table).where(Table.restaurant == restaurant.id)
         select_tables: list[Table] = db_service.get_with_filters(statement)
 
@@ -122,4 +125,14 @@ def create_mocks_in_db():
 
         customer_name = f'{random.choice(names)} {random.choice(lastanames)}'
         print(selected_sidedishoption)
-        db_service.create_object(OrderDetail(dish_selected = selected_sidedishoption.id, order = order.id, sub_total = selected_sidedishoption.extra_price, customer = customer_name))
+
+        detail = OrderDetail(
+            dish=selected_sidedishoption.dish,
+            side_dish=selected_sidedishoption.side_dish, 
+            order = order.id, 
+            sub_total = selected_sidedishoption.extra_price, 
+            customer = customer_name,
+            ammount=random.randint(1,5),
+            customer_name=random.choice(names)
+        )
+        db_service.create_object(detail)

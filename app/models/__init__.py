@@ -74,10 +74,12 @@ class Order(SQLModel, table=True):
 
 class OrderDetail(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    dish_selected: int = Field(foreign_key="sidedishoptions.id")
+    dish: int = Field(foreign_key="dish.id")
+    side_dish: int = Field(foreign_key="sidedish.id")
     order: Optional[int] = Field(foreign_key="order.id")
     sub_total: float = Field(...)
-    customer: str = Field(...)
+    customer_name: str = Field(...)
+    ammount: int
     observation: str = Field(default="")
 
 class Waiter(SQLModel, table=True):
