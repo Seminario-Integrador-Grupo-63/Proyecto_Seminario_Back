@@ -10,7 +10,7 @@ from services.redis_service import redis_service
 
 async def save_order_detail_to_cache(table_code:str, order_detail: OrderDetail):
     detail_list = redis_service.save_list(table_code, order_detail)
-    customer_set, _ = redis_service.save_set(f"{table_code}_costumer", order_detail.customer_name)
+    customer_set, _ = redis_service.save_set(f"{table_code}_customer", order_detail.customer_name)
     return detail_list
 
 async def remove_order_detail(table_code: str, order_detail: OrderDetail):

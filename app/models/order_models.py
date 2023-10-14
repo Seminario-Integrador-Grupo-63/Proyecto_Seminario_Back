@@ -31,7 +31,7 @@ class CustomerOrderDetailData(BaseModel):
 
 class FullOrderDTO(BaseModel):
     id: int | None = None
-    total_customers: int = Field(alias="totalCostumers")
+    total_customers: int = Field(alias="totalCustomers")
     confirmed_customers: int = Field(alias="confirmedCustomera")
     order_details: list[CustomerOrderDetailData] = Field(alias="customerOrderDetail")
     date_created: str = Field(alias="CreatedAtDate")

@@ -12,5 +12,5 @@ class WebSocketData(BaseModel):
     customer: str | None = ""
 
 class ConfirmationDTO(BaseModel):
-    total_costumers:int
-    confirmed_costumers: int
+    total_customers:int
+    confirmed_customers: int
