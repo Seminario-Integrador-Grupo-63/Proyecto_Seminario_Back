@@ -29,14 +29,10 @@ async def generate_qrcode(table_id: int):
     qr.make()
 
     # Logo
-<<<<<<< Updated upstream
-    logofile = 'logo-qr.png' # here goes the location of the chosen logo
-=======
     logofile = '/code/resources/logo-qr.png' # here goes the location of the chosen logo
     """
     IMPORTANTE CAMBIAR EL LOGO POR VARIABLE DE ENTORNO
     """
->>>>>>> Stashed changes
     logo = Image.open(logofile)
     width = 1300
     widthpercentage = (width / float(logo.size[0]))
