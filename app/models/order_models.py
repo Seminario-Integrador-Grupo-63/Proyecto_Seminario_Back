@@ -25,7 +25,8 @@ class OrderDetailData(BaseModel):
 class CustomerOrderDetailData(BaseModel):
     customer: str
     order_detail: list[OrderDetailData] = Field(alias="orderDetails")
-
+    customer_total: float | None = Field(default=None, alias="customerTotal")
+    
     class Config:
         allow_population_by_field_name = True
 

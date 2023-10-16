@@ -81,7 +81,7 @@ async def get_detail_data_list_and_price(details_dict:dict[list[OrderDetail]]):
     customer_order_data_list = []
     total_price = 0.0
     for key, customer_details in details_dict.items():
-        
+        customer_total = 0.0
         detail_data_list = []
         for detail in customer_details:
             dish = db_service.get_object_by_id(Dish, detail.dish)
@@ -93,9 +93,10 @@ async def get_detail_data_list_and_price(details_dict:dict[list[OrderDetail]]):
                                                 observation=detail.observation
                                                 )
             total_price += detail.sub_total
+            customer_total += detail.sub_total
             detail_data_list.append(order_detail_data)
         
-        customer_order_data = CustomerOrderDetailData(customer=key, order_detail=detail_data_list)
+        customer_order_data = CustomerOrderDetailData(customer=key, order_detail=detail_data_list, customer_total = customer_total)
         customer_order_data_list.append(customer_order_data)
     return total_price, customer_order_data_list
 
@@ -148,13 +149,22 @@ async def get_current_orders(table_code: str) -> list[FullOrderDTO]:
     dto_list.append(current_order)
     return dto_list
 
-async def generate_billing(table_code: str):
-    orders: list[Order] = await get_current_orders(table_code)
-    full_orders_list = []
+async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:
+    table: Table = await get_table_by_code(table_code)
+    statement = select(Order).where(Order.table == table.id).where(Order.state != OrderState.closed).where(Order.state != OrderState.cancelled).where(Order.state != OrderState.processing)
+    orders: list[Order] = db_service.get_with_filters(statement)
+    customer_data_list = []
     for order in orders:
-        full_orders_list.append(get_full_order(order.id))
+
+        statement = select(OrderDetail).where(OrderDetail.order == order.id)
+        order_details: list[OrderDetail] = db_service.get_with_filters(statement)
+        detail_dict = await group_details(order_details)
+        total_price, customer_order_data_list = await get_detail_data_list_and_price(detail_dict)
+        
+        customer_data_list.append(customer_order_data_list)
+    return customer_data_list
     
-    return full_orders_list
+        
 
 async def init_table(table_code: str, customer_name: str):
     customers_sitted, saved = redis_service.save_set(f"{table_code}_sitted", customer_name)

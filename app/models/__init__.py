@@ -90,7 +90,7 @@ class Order(SQLModel, table=True):
 class OrderDetail(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     dish: int = Field(foreign_key="dish.id")
-    side_dish: int = Field(foreign_key="sidedish.id", alias="sideDish")
+    side_dish: int | None = Field(foreign_key="sidedish.id", alias="sideDish", nullable=True, default=None)
     order: Optional[int] = Field(foreign_key="order.id")
     sub_total: float = Field(alias="subTotal")
     customer_name: str = Field(alias="customerName")
