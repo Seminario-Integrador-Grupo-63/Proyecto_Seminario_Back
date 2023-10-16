@@ -17,8 +17,12 @@ from services.order_service import get_full_order
 from services.redis_service import redis_service
 
 async def get_table_by_code(table_code: str):
-    statement = select(Table).where(Table.qr_id == table_code)
-    return db_service.get_with_filters(statement)[0]
+    try:
+        statement = select(Table).where(Table.qr_id == table_code)
+        return db_service.get_with_filters(statement)[0]
+    except Exception as e:
+        raise(f"No se pudo encontrar la mesa con codigo {table_code} error {e}")
+    
 
 async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
