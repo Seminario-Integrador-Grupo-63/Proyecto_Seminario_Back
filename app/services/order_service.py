@@ -14,12 +14,27 @@ async def save_order_detail_to_cache(table_code:str, order_detail: OrderDetail):
     return detail_list
 
 async def remove_order_detail(table_code: str, order_detail: OrderDetail):
-    return redis_service.remove_from_list(table_code, order_detail)
+    order_detail_list: list[OrderDetail] = redis_service.remove_from_list(table_code, order_detail)
+    has_order = False
+    for detail in order_detail_list:
+        if detail.customer_name == order_detail.customer_name:
+            has_order = True
+    if not has_order:
+        redis_service.remove_from_list(f"{table_code}_customer", order_detail.customer_name)
+    return order_detail_list
 
 async def get_order_details(table_code:str):
     return redis_service.get_data(table_code)
 
-async def confirm_order(table_code: str):
+async def confirm_order(table_code: str, customer_name:str):
+    confirmed_costumers, _= redis_service.save_set(f"{table_code}_confirmed", customer_name)
+    total_customers = redis_service.get_data(f"{table_code}_customer")
+
+    if not len(confirmed_costumers) == len(total_customers):
+        return {"confirmedCostumers": confirmed_costumers,
+                "totalcostumers": total_customers}
+
+
     total_price = 0.0
 
     statement = select(Table).where(Table.qr_id == table_code)
@@ -30,16 +45,15 @@ async def confirm_order(table_code: str):
     order: Order = db_service.create_object(order) 
 
     for detail in detail_list:
-        detail.pop("id")
-        order_detail = OrderDetail(**detail)
-        order_detail.order = order.id
         
-        total_price += order_detail.sub_total
+        total_price += detail.sub_total
 
-        db_service.create_object(order_detail)
+        db_service.create_object(detail)
     
     order.total = total_price
     redis_service.delete_data(table_code)
+    redis_service.delete_data(f"{table_code}_confirmed")
+    redis_service.delete_data(f"{table_code}_customer")
     return db_service.update_object(Order, order)
 
 async def get_full_order(order_id: int):
