@@ -99,6 +99,9 @@ def create_mocks_in_db():
         table_1 = Table(restaurant = restaurant.id)
         db_service.create_object(table_1)
 
+    table_qr_code = Table(restaurant = restaurant.id, qr_id = "a")
+    db_service.create_object(table_qr_code)
+    
     #Crear mosos
     for i in range(1, 3):
         waiter_name = f'{random.choice(names)} {random.choice(lastanames)}'
