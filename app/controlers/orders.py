@@ -1,3 +1,4 @@
+from datetime import timedelta
 from fastapi import APIRouter, Header
 from models import Order, OrderDetail
 from services.db_service import db_service
@@ -7,7 +8,8 @@ order_router = APIRouter(prefix="/order", tags=["Orders"])
 
 @order_router.get("/", response_model=list[Order])
 async def get_orders(restaurant_id: int = Header(...)):
-    statement = select(Order).where(Order.restaurant == restaurant_id)
+    time = datetime.now() - timedelta(days=1)
+    statement = select(Order).where(Order.restaurant == restaurant_id, Order.created_at >= time)
     return db_service.get_with_filters(statement)
 
 @order_router.get("/{id}")
