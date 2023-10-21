@@ -89,7 +89,7 @@ async def get_detail_data_list_and_price(details_dict:dict[list[OrderDetail]]):
         detail_data_list = []
         for detail in customer_details:
             dish = db_service.get_object_by_id(Dish, detail.dish)
-            side_dish = db_service.get_object_by_id(SideDish, detail.side_dish)
+            side_dish = db_service.get_object_by_id(SideDish, detail.side_dish) if detail.side_dish else None
             order_detail_data = OrderDetailData(ammount=detail.ammount,
                                                 dish=dish,
                                                 side_dish= side_dish,

@@ -67,11 +67,17 @@ class SideDishOptions(SQLModel, table=True):
     class Config:
         allow_population_by_field_name = True
 
+class TableSector(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(...)
+    restaurant: int = Field(foreign_key="restaurant.id")
+
 class Table(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     is_booked: bool = Field(default=False, alias="isBooked")
     qr_id: str | None = Field(default="", alias="qrID") #uuid4 for a unique qr code id
     restaurant: Optional[int] = Field(foreign_key="restaurant.id") #Sacar el optional cuando este terminado la creacion d eusuario
+    sector: int = Field(foreign_key="tablesector.id")
     
     class Config:
         allow_population_by_field_name = True
