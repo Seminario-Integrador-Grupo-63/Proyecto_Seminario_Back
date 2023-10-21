@@ -103,7 +103,10 @@ def create_mocks_in_db():
             table_1 = Table(restaurant = restaurant.id, sector=sector.id)
             db_service.create_object(table_1)
 
-    table_qr_code = Table(restaurant = restaurant.id, qr_id = "a")
+    # Crear mesa con codigo
+    sector = TableSector(name=f"sector 4", restaurant=restaurant.id)
+    sector: TableSector = db_service.create_object(sector)
+    table_qr_code = Table(restaurant = restaurant.id, qr_id = "a", sector=sector.id)
     db_service.create_object(table_qr_code)
     
     #Crear mosos
