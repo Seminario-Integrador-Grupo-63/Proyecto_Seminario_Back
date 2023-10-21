@@ -1,7 +1,7 @@
 from services.db_service import db_service
 from datetime import datetime
 from sqlmodel import select
-from models import User, Restaurant, Category, Dish, SideDish, Table, Waiter, SideDishOptions, Order, OrderDetail
+from models import TableSector, User, Restaurant, Category, Dish, SideDish, Table, Waiter, SideDishOptions, Order, OrderDetail
 import random
 from resources.mock_data import image1
 
@@ -17,7 +17,7 @@ drinks_names = ["Cocucha bien fria", "Priteado", "Prity", "Fernandito", "Birrita
 images = [image1]
 
 def create_mocks_in_db():
-    models_list = [User,OrderDetail, SideDishOptions, Dish, SideDish, Waiter, Order,Table, Category, Restaurant]
+    models_list = [User,OrderDetail, SideDishOptions, Dish, SideDish, Waiter, Order,Table, Category, TableSector, Restaurant]
     for model in models_list:
         db_service.delete_dable(model)
 
@@ -93,11 +93,15 @@ def create_mocks_in_db():
         side_dish_option_1 = SideDishOptions(dish = selected_dish.id, side_dish = selected_sidedish.id)
         db_service.create_object(side_dish_option_1)
 
-
-    #Crear mesas
-    for i in range(1, 15):
-        table_1 = Table(restaurant = restaurant.id)
-        db_service.create_object(table_1)
+    #Crear Sectores y mesas
+    for i in range(1,3):
+        sector = TableSector(name=f"sector {i}", restaurant=restaurant.id)
+        sector: TableSector = db_service.create_object(sector)
+        
+        #Crear mesas
+        for i in range(1, 15):
+            table_1 = Table(restaurant = restaurant.id, sector=sector.id)
+            db_service.create_object(table_1)
 
     table_qr_code = Table(restaurant = restaurant.id, qr_id = "a")
     db_service.create_object(table_qr_code)

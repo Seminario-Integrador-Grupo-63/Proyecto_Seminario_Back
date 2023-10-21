@@ -1,6 +1,6 @@
 
 from fastapi import APIRouter, Header
-from models import Table
+from models import Table, TableSector
 from services.db_service import db_service
 from services.table_service import *
 
@@ -43,3 +43,15 @@ async def get_table_billing(table_code: str):
 async def init_tables(customer_name:str, table_code:str):
     return await init_table(table_code=table_code, customer_name=customer_name)
 
+@table_router.get("/sector")
+async def get_sectors(restaurant_id: int = Header(...)):
+    statement = select(TableSector).where(TableSector.restaurant == restaurant_id)
+    return db_service.get_with_filters(statement)
+
+@table_router.post("/sector")
+async def create_table(body: TableSector):
+    return db_service.create_object(body)
+
+@table_router.put("/sector")
+async def update_table(body: TableSector):
+    return db_service.update_object(Table, body)
