@@ -89,16 +89,19 @@ async def get_detail_data_list_and_price(details_dict:dict[list[OrderDetail]]):
         detail_data_list = []
         for detail in customer_details:
             dish = db_service.get_object_by_id(Dish, detail.dish)
-            side_dish = db_service.get_object_by_id(SideDish, detail.side_dish) if detail.side_dish else None
-            order_detail_data = OrderDetailData(ammount=detail.ammount,
-                                                dish=dish,
-                                                side_dish= side_dish,
-                                                sub_total=detail.sub_total,
-                                                observation=detail.observation
-                                                )
-            total_price += detail.sub_total
-            customer_total += detail.sub_total
-            detail_data_list.append(order_detail_data)
+            if not detail.side_dish:
+                pass
+            else:
+                side_dish = db_service.get_object_by_id(SideDish, detail.side_dish)
+                order_detail_data = OrderDetailData(ammount=detail.ammount,
+                                                    dish=dish,
+                                                    side_dish= side_dish,
+                                                    sub_total=detail.sub_total,
+                                                    observation=detail.observation
+                                                    )
+                total_price += detail.sub_total
+                customer_total += detail.sub_total
+                detail_data_list.append(order_detail_data)
         
         customer_order_data = CustomerOrderDetailData(customer=key, order_detail=detail_data_list, customer_total = customer_total)
         customer_order_data_list.append(customer_order_data)
