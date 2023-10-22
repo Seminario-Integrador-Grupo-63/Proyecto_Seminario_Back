@@ -15,7 +15,7 @@ class FullOrderData(BaseModel):
 class OrderDetailData(BaseModel):
     ammount: int
     dish: Dish
-    side_dish: SideDish = Field(alias="sideDish")
+    side_dish: SideDish | None = Field(alias="sideDish", default=None)
     sub_total: float = Field(alias="subTotal")
     observation: str
 
