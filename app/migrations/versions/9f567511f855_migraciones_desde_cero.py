@@ -1,8 +1,8 @@
-"""fix joaquin
+"""Migraciones desde cero
 
-Revision ID: 23c7fb21990f
-Revises: 22690ca1c0f5
-Create Date: 2023-10-21 18:04:27.996739
+Revision ID: 9f567511f855
+Revises: 
+Create Date: 2023-10-22 20:09:18.783042
 
 """
 from typing import Sequence, Union
@@ -13,8 +13,8 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '23c7fb21990f'
-down_revision: Union[str, None] = '22690ca1c0f5'
+revision: str = '9f567511f855'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

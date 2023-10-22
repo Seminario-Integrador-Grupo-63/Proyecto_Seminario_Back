@@ -78,3 +78,7 @@
 - Correr el comando ` python -m alembic revision --autogenerate -m "Aca un comentario sobre de que fue la migracion" `
 
 - Ejecutar la migracion `python -m alembic upgrade head`
+
+- IMPORTANTE!!!!!!!!!!!!!!!!! Si se creo una migracion afuera del contenedor dar permisos al archivo de migracion
+
+- En el caso de Linux `sudo chown -R usuario:usuario *` correr afuera del contenedor
