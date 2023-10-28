@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import StrEnum
 from typing import Optional
+from pydantic import Extra
 
 from sqlmodel import SQLModel, Field, ForeignKey, create_engine
 
@@ -58,6 +59,9 @@ class SideDish(SQLModel, table=True):
     image: Optional[bytes] = None
     restaurant: int = Field(foreign_key="restaurant.id")
 
+    class Config:
+        extra = Extra.allow
+
 class SideDishOptions(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     dish: int = Field(foreign_key="dish.id")
@@ -100,7 +104,7 @@ class OrderDetail(SQLModel, table=True):
     order: Optional[int] = Field(foreign_key="order.id")
     sub_total: float = Field(alias="subTotal")
     customer_name: str = Field(alias="customerName")
-    ammount: int
+    amount: int
     observation: str = Field(default="")
 
     class Config:

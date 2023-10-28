@@ -90,7 +90,7 @@ def create_mocks_in_db():
         selected_dish = random.choice(dishes)
         selected_sidedish = random.choice(side_dishes)
 
-        side_dish_option_1 = SideDishOptions(dish = selected_dish.id, side_dish = selected_sidedish.id)
+        side_dish_option_1 = SideDishOptions(dish = selected_dish.id, side_dish = selected_sidedish.id, extraPrice=random.randint(100, 500))
         db_service.create_object(side_dish_option_1)
 
     #Crear Sectores y mesas
@@ -142,7 +142,9 @@ def create_mocks_in_db():
             order = order.id, 
             sub_total = selected_sidedishoption.extra_price, 
             customer = customer_name,
-            ammount=random.randint(1,5),
+            amount=random.randint(1,5),
             customer_name=random.choice(names)
         )
         db_service.create_object(detail)
+    
+    return {"restaurant_id": restaurant.id}

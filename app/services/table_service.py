@@ -12,7 +12,7 @@ from models.order_models import CustomerOrderDetailData, FullOrderDTO, OrderDeta
 
 from models.table_models import QRcodeData
 from services.db_service import db_service
-from models import Dish, Order, OrderDetail, OrderState, SideDish, Table
+from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table
 from services.order_service import get_full_order
 from services.redis_service import redis_service
 
@@ -88,9 +88,14 @@ async def get_detail_data_list_and_price(details_dict:dict[list[OrderDetail]]):
         customer_total = 0.0
         detail_data_list = []
         for detail in customer_details:
-            dish = db_service.get_object_by_id(Dish, detail.dish)
-            side_dish = db_service.get_object_by_id(SideDish, detail.side_dish) if detail.side_dish else None
-            order_detail_data = OrderDetailData(ammount=detail.ammount,
+            dish: Dish = db_service.get_object_by_id(Dish, detail.dish)
+            side_dish: SideDish = db_service.get_object_by_id(SideDish, detail.side_dish) if detail.side_dish else None
+            if side_dish:
+                statement = select(SideDishOptions).where(SideDishOptions.dish==dish.id, side_dish==side_dish.id)
+                side_dish_option: SideDishOptions =db_service.get_with_filters(statement)
+                if side_dish_option:
+                    side_dish.price = side_dish_option[0].extra_price
+            order_detail_data = OrderDetailData(amount=detail.amount,
                                                 dish=dish,
                                                 side_dish= side_dish,
                                                 sub_total=detail.sub_total,
@@ -131,6 +136,8 @@ async def get_completed_orders(table: Table):
 
 async def get_cache_orders(table:Table):
     details_list = redis_service.get_data(table.qr_id)
+    if not details_list:
+        return None
     details_dict = await group_details(details_list)
     total_price, customer_order_data_list = await get_detail_data_list_and_price(details_dict)
 
@@ -141,7 +148,7 @@ async def get_cache_orders(table:Table):
                                 confirmed_customers = len(details_dict),
                                 order_details = customer_order_data_list,
                                 total=total_price,
-                                state=OrderState.preparation
+                                state=OrderState.processing
                             )
     return order_dto
 
@@ -150,7 +157,8 @@ async def get_current_orders(table_code: str) -> list[FullOrderDTO]:
     dto_list = await get_completed_orders(table)
 
     current_order = await get_cache_orders(table)
-    dto_list.append(current_order)
+    if current_order:
+        dto_list.append(current_order)
     return dto_list
 
 async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:

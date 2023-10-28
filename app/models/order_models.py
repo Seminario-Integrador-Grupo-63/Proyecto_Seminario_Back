@@ -13,7 +13,7 @@ class FullOrderData(BaseModel):
         allow_population_by_field_name = True
 
 class OrderDetailData(BaseModel):
-    ammount: int
+    amount: int
     dish: Dish
     side_dish: SideDish | None = Field(alias="sideDish", default=None)
     sub_total: float = Field(alias="subTotal")
@@ -33,10 +33,10 @@ class CustomerOrderDetailData(BaseModel):
 class FullOrderDTO(BaseModel):
     id: int | None = None
     total_customers: int = Field(alias="totalCustomers")
-    confirmed_customers: int = Field(alias="confirmedCustomera")
-    order_details: list[CustomerOrderDetailData] = Field(alias="customerOrderDetail")
-    date_created: str = Field(alias="CreatedAtDate")
-    time_created: str = Field(alias="CreatedAtTime")
+    confirmed_customers: int = Field(alias="confirmedCustomers")
+    order_details: list[CustomerOrderDetailData] = Field(alias="customerOrderDetails")
+    date_created: str = Field(alias="createdAtDate")
+    time_created: str = Field(alias="createdAtTime")
     total: float
     state: OrderState
 

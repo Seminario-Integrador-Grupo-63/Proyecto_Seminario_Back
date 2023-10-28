@@ -31,7 +31,7 @@ async def get_qrcode(table_id: int):
 async def update_qrcode(table_id:int, uuid_code: str):
     return await update_uuid(table_id=table_id, uuid_code=uuid_code)
 
-@table_router.get("/{table_code}/orders")
+@table_router.get("/{table_code}/orders", response_model=list[FullOrderDTO])
 async def get_table_orders(table_code:str):
     return await get_current_orders(table_code=table_code)
 
