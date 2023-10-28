@@ -9,7 +9,7 @@ class UpdatePriceAction(StrEnum):
     decrease = "decrease"
 
 class SideDishData(BaseModel):
-    side_dish_id: int = Field(alias="sideDishId")
+    side_dish_id: int = Field(alias="id")
     side_dish_name: str = Field(alias="name")
     side_dish_description: str = Field(alias="description")
     extra_price: float = Field(alias="extraPrice")
