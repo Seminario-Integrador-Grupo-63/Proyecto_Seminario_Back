@@ -39,7 +39,7 @@ async def confirm_order(table_code: str, customer_name:str):
 
     statement = select(Table).where(Table.qr_id == table_code)
     table: Table = db_service.get_with_filters(statement)[0]
-    detail_list = redis_service.get_data(table_code)
+    detail_list: list[OrderDetail] = redis_service.get_data(table_code)
 
     order = Order(table=table.id, created_at=datetime.now(), restaurant=table.restaurant)
     order: Order = db_service.create_object(order) 
@@ -47,7 +47,7 @@ async def confirm_order(table_code: str, customer_name:str):
     for detail in detail_list:
         
         total_price += detail.sub_total
-
+        detail.order = order.id
         db_service.create_object(detail)
     
     order.total = total_price

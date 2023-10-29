@@ -35,7 +35,7 @@ async def update_qrcode(table_id:int, uuid_code: str):
 async def get_table_orders(table_code:str):
     return await get_current_orders(table_code=table_code)
 
-@table_router.get("/{table_code}/bill", response_model=list[CustomerOrderDetailData])
+@table_router.get("/{table_code}/bill")
 async def get_table_billing(table_code: str):
     return await generate_billing(table_code)
 
