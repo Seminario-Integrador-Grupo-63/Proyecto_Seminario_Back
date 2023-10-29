@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field
 
 from models import Dish, Order, OrderDetail, OrderState, SideDish
 
+class SideDishWithPrice(SideDish, table=False):
+    price: float | None = 0.0
 
 class FullOrderData(BaseModel):
     order: Order
@@ -15,7 +17,7 @@ class FullOrderData(BaseModel):
 class OrderDetailData(BaseModel):
     amount: int
     dish: Dish
-    side_dish: SideDish | None = Field(alias="sideDish", default=None)
+    side_dish: SideDishWithPrice | None = Field(alias="sideDish", default=None)
     sub_total: float = Field(alias="subTotal")
     observation: str
 

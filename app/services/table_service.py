@@ -8,7 +8,7 @@ from fastapi import HTTPException
 import qrcode
 from PIL import Image
 from sqlmodel import select
-from models.order_models import CustomerOrderDetailData, FullOrderDTO, OrderDetailData
+from models.order_models import CustomerOrderDetailData, FullOrderDTO, OrderDetailData, SideDishWithPrice
 
 from models.table_models import QRcodeData
 from services.db_service import db_service
@@ -91,8 +91,9 @@ async def get_detail_data_list_and_price(details_dict:dict[list[OrderDetail]]):
             dish: Dish = db_service.get_object_by_id(Dish, detail.dish)
             side_dish: SideDish = db_service.get_object_by_id(SideDish, detail.side_dish) if detail.side_dish else None
             if side_dish:
-                statement = select(SideDishOptions).where(SideDishOptions.dish==dish.id, side_dish==side_dish.id)
+                statement = select(SideDishOptions).where(SideDishOptions.dish==dish.id).where(side_dish==side_dish.id)
                 side_dish_option: SideDishOptions =db_service.get_with_filters(statement)
+                side_dish = SideDishWithPrice(**side_dish.dict())
                 if side_dish_option:
                     side_dish.price = side_dish_option[0].extra_price
             order_detail_data = OrderDetailData(amount=detail.amount,
