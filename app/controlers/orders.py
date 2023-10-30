@@ -28,6 +28,6 @@ async def add_order_detail(table_code:str, body: OrderDetail):
 async def get_details(table_code:str):
     return await get_order_details(table_code)
 
-@order_router.delete("/detail/{tablr_code}")
+@order_router.delete("/detail/{table_code}")
 async def remove_detail(table_dode: str, body: OrderDetail):
     return await remove_order_detail(table_code=table_dode, order_detail=body)

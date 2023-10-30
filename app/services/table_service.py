@@ -98,6 +98,8 @@ async def get_detail_data_list_and_price(details_dict:dict[list[OrderDetail]]):
                     for option in side_dish_options:
                         if option.side_dish == side_dish.id:
                             side_dish_2.price = option.extra_price
+            else:
+                side_dish_2 = None
             order_detail_data = OrderDetailData(amount=detail.amount,
                                                 dish=dish,
                                                 side_dish= side_dish_2,
