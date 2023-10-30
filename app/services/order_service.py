@@ -2,7 +2,7 @@ import pickle
 from datetime import datetime
 
 from sqlmodel import select
-from models import Order, OrderDetail, Table
+from models import Order, OrderDetail, OrderState, Table
 from models.order_models import FullOrderData
 from services.db_service import db_service
 from services.redis_service import redis_service
@@ -41,7 +41,7 @@ async def confirm_order(table_code: str, customer_name:str):
     table: Table = db_service.get_with_filters(statement)[0]
     detail_list: list[OrderDetail] = redis_service.get_data(table_code)
 
-    order = Order(table=table.id, created_at=datetime.now(), restaurant=table.restaurant)
+    order = Order(table=table.id, created_at=datetime.now(), restaurant=table.restaurant, state=OrderState.waiting)
     order: Order = db_service.create_object(order) 
 
     for detail in detail_list:

@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from models import Dish, Order, OrderDetail, OrderState, SideDish
 
 class SideDishWithPrice(SideDish, table=False):
-    price: float | None = 0.0
+    price: float | None = Field(default=0.0, alias="extraPrice")
 
 class FullOrderData(BaseModel):
     order: Order
