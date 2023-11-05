@@ -16,9 +16,9 @@ async def get_orders(restaurant_id: int = Header(...)):
 async def get_order(id: int):
     return await get_full_order(order_id=id)
 
-@order_router.post("/{table_id}")
-async def order_confirmation(table_id: str, customer_name: str):
-    return await confirm_order(table_id, customer_name)
+@order_router.post("/{table_code}")
+async def order_confirmation(table_code: str, customer_name: str):
+    return await confirm_order(table_code, customer_name)
 
 @order_router.post("/detail/{table_code}")
 async def add_order_detail(table_code:str, body: OrderDetail):

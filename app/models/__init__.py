@@ -6,18 +6,18 @@ from pydantic import Extra
 from sqlmodel import SQLModel, Field, ForeignKey, create_engine
 
 class OrderState(StrEnum):
-    processing = "processing" #Se escaneo el qr y se esta armando una orden
-    waiting = "waiting" # Se confirmo la orden y se esta esperando la confirmacion del restaurante
-    preparation = "preparation" # El restaurante confirmo la orden
+    processing = "processing" # /order/detail/{table_code} [POST] Se escaneo el qr y se esta armando una orden
+    waiting = "waiting" # /order/{table_code} [POST] Se confirmo la orden y se esta esperando la confirmacion del restaurante
+    preparation = "preparation" # /order/preparation/{order_id} El restaurante confirmo la orden
     cancelled = "cancelled" # Cancelado
     delivered = "delivered" # Entregada en la mesa
     closed = "closed" # Pagada
 
 class TableState(StrEnum):
-    free = "free" # Desocupada
-    ocupied = "ocupied" # Ocupada
-    waiting = "waiting" # Esperando confirmacion de orden
-    payment_ready = "payment_ready" # Cuenta pedida
+    free = "free" # /table/{table_code}/bill [POST] Desocupada
+    ocupied = "ocupied" # /table/{table_code}/init Ocupada
+    waiting = "waiting" # /order/{table_code} Esperando confirmacion de orden
+    payment_ready = "payment_ready" # /table/{table_code}/bill [GET] Cuenta pedida
 
 class UserRolesEnum(StrEnum):
     admin = "admin"
