@@ -16,12 +16,20 @@ from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptio
 from services.order_service import get_full_order
 from services.redis_service import redis_service
 
+
 async def get_table_by_code(table_code: str):
     try:
         statement = select(Table).where(Table.qr_id == table_code)
         return db_service.get_with_filters(statement)[0]
     except Exception as e:
         raise(f"No se pudo encontrar la mesa con codigo {table_code} error {e}")
+    
+async def change_table_state(table_code:str, current_state: TableState, new_state: TableState):
+    table: Table = await get_table_by_code(table_code=table_code)
+
+    if table.state == current_state:
+        table.state = new_state
+        return db_service.update_object(table, Table)
     
 
 async def generate_qrcode(table_id: int):
@@ -189,12 +197,7 @@ async def init_table(table_code: str, customer_name: str):
     if not saved:
         raise HTTPException(status_code=400, detail="Ese nombre pertenece a otro miembro de la mesa")
     else:
-        statement = select(Table).where(Table.qr_id==table_code)
-        table: Table = db_service.get_with_filters(statement)
-
-        if table.state != TableState.free:
-            table.state = TableState.ocupied
-            db_service.update_object(table, Table)
+        await change_table_state(table_code, TableState.free, TableState.ocupied)
     
 async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
     statement = select(Table).where(Table.restaurant == restaurant_id)
@@ -209,3 +212,4 @@ async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
     table_grid_list = [TableGridList(sector=sector, tables=tables) for sector, tables in sector_table_dict.items()]
     
     return table_grid_list
+
