@@ -10,7 +10,7 @@ from PIL import Image
 from sqlmodel import select
 from models.order_models import CustomerOrderDetailData, FullOrderDTO, OrderDetailData, SideDishWithPrice
 
-from models.table_models import QRcodeData
+from models.table_models import QRcodeData, TableGridList
 from services.db_service import db_service
 from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table
 from services.order_service import get_full_order
@@ -189,3 +189,17 @@ async def init_table(table_code: str, customer_name: str):
         raise HTTPException(status_code=400, detail="Ese nombre pertenece a otro miembro de la mesa")
     else:
         return
+    
+async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
+    statement = select(Table).where(Table.restaurant == restaurant_id)
+    tables = db_service.get_with_filters(statement)
+
+    sector_table_dict = {}
+    for table in tables:
+        if table.sector not in sector_table_dict:
+            sector_table_dict[table.sector] = []
+        sector_table_dict[table.sector].append(table)
+    
+    table_grid_list = [TableGridList(sector=sector, tables=tables) for sector, tables in sector_table_dict.items()]
+    
+    return table_grid_list

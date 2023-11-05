@@ -15,6 +15,10 @@ async def get_tables(restaurant_id: int = Header(...)):
 async def get_table(id: int):
     return db_service.get_object_by_id(Table, id)
 
+@table_router.get("/grid", response_model=list[TableGridList])
+async def get_grids_tables(restaurant_id: int = Header(...)):
+    return get_tables_grid(restaurant_id=restaurant_id)
+
 @table_router.post("/")
 async def create_table(body: Table):
     return db_service.create_object(body)
