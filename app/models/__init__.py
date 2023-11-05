@@ -6,12 +6,18 @@ from pydantic import Extra
 from sqlmodel import SQLModel, Field, ForeignKey, create_engine
 
 class OrderState(StrEnum):
-    processing = "processing"
-    waiting = "waiting"
-    preparation = "preparation"
-    cancelled = "cancelled"
-    delivered = "delivered"
-    closed = "closed"
+    processing = "processing" # /order/detail/{table_code} [POST] Se escaneo el qr y se esta armando una orden
+    waiting = "waiting" # /order/{table_code} [POST] Se confirmo la orden y se esta esperando la confirmacion del restaurante
+    preparation = "preparation" # /order/preparation/{order_id} El restaurante confirmo la orden
+    cancelled = "cancelled" # Cancelado
+    delivered = "delivered" # Entregada en la mesa
+    closed = "closed" # Pagada
+
+class TableState(StrEnum):
+    free = "free" # /table/{table_code}/bill [POST] Desocupada
+    ocupied = "ocupied" # /table/{table_code}/init Ocupada
+    waiting = "waiting" # /order/{table_code} Esperando confirmacion de orden
+    payment_ready = "payment_ready" # /table/{table_code}/bill [GET] Cuenta pedida
 
 class UserRolesEnum(StrEnum):
     admin = "admin"
@@ -78,10 +84,10 @@ class TableSector(SQLModel, table=True):
 
 class Table(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    is_booked: bool = Field(default=False, alias="isBooked")
     qr_id: str | None = Field(default="", alias="qrID") #uuid4 for a unique qr code id
-    restaurant: Optional[int] = Field(foreign_key="restaurant.id") #Sacar el optional cuando este terminado la creacion d eusuario
+    restaurant: int = Field(foreign_key="restaurant.id")
     sector: int = Field(foreign_key="tablesector.id")
+    state: TableState | None = Field(default=TableState.free)
     
     class Config:
         allow_population_by_field_name = True

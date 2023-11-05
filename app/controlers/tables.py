@@ -15,6 +15,10 @@ async def get_tables(restaurant_id: int = Header(...)):
 async def get_table(id: int):
     return db_service.get_object_by_id(Table, id)
 
+@table_router.get("/grid", response_model=list[TableGridList])
+async def get_grids_tables(restaurant_id: int = Header(...)):
+    return get_tables_grid(restaurant_id=restaurant_id)
+
 @table_router.post("/")
 async def create_table(body: Table):
     return db_service.create_object(body)
@@ -38,6 +42,10 @@ async def get_table_orders(table_code:str):
 @table_router.get("/{table_code}/bill")
 async def get_table_billing(table_code: str):
     return await generate_billing(table_code)
+
+@table_router.post("/{table_code}/bill")
+async def billing_confirmation(table_code: str):
+    return await change_table_state(table_code, TableState.payment_ready , TableState.free)
 
 @table_router.post("/{table_code}/init")
 async def init_tables(customer_name:str, table_code:str):
