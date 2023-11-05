@@ -12,7 +12,7 @@ from models.order_models import CustomerOrderDetailData, FullOrderDTO, OrderDeta
 
 from models.table_models import QRcodeData, TableGridList
 from services.db_service import db_service
-from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table
+from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table, TableState
 from services.order_service import get_full_order
 from services.redis_service import redis_service
 
@@ -185,10 +185,16 @@ async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:
 
 async def init_table(table_code: str, customer_name: str):
     customers_sitted, saved = redis_service.save_set(f"{table_code}_sitted", customer_name)
+
     if not saved:
         raise HTTPException(status_code=400, detail="Ese nombre pertenece a otro miembro de la mesa")
     else:
-        return
+        statement = select(Table).where(Table.qr_id==table_code)
+        table: Table = db_service.get_with_filters(statement)
+
+        if table.state != TableState.free:
+            table.state = TableState.ocupied
+            db_service.update_object(table, Table)
     
 async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
     statement = select(Table).where(Table.restaurant == restaurant_id)
