@@ -14,7 +14,7 @@ async def get_orders(restaurant_id: int = Header(...)):
 
 @order_router.get("/{id}")
 async def get_order(id: int):
-    return get_full_order(order_id=id)
+    return await get_full_order(order_id=id)
 
 @order_router.post("/{table_id}")
 async def order_confirmation(table_id: str, customer_name: str):
@@ -31,3 +31,7 @@ async def get_details(table_code:str):
 @order_router.delete("/detail/{table_code}")
 async def remove_detail(table_code: str, body: OrderDetail):
     return await remove_order_detail(table_code=table_code, order_detail=body)
+
+@order_router.post("/preparation/{order_id}")
+async def confirm_order_preparation(order_id: int):
+    return await confirm_preparation(order_id)

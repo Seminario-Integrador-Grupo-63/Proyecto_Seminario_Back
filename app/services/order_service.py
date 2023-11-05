@@ -1,10 +1,10 @@
 import pickle
-import table_service
 from datetime import datetime
 
 from sqlmodel import select
 from models import Order, OrderDetail, OrderState, Table, TableState
 from models.order_models import FullOrderData
+from services import table_service
 from services.db_service import db_service
 from services.redis_service import redis_service
 
@@ -55,7 +55,7 @@ async def confirm_order(table_code: str, customer_name:str):
     updated_order = db_service.update_object(Order, order)
 
     await table_service.change_table_state(table_code, TableState.ocupied, TableState.waiting)
-    
+
     redis_service.delete_data(table_code)
     redis_service.delete_data(f"{table_code}_confirmed")
     redis_service.delete_data(f"{table_code}_customer")
@@ -70,3 +70,12 @@ async def get_full_order(order_id: int):
     detail_list = db_service.get_with_filters(statement)
 
     return FullOrderData(order=order, order_details=detail_list)
+
+async def confirm_preparation(order_id: int):
+    order: Order = db_service.get_object_by_id(model=Order, id=order_id)
+    order.state = OrderState.preparation
+    new_order = db_service.update_object(model=Order, body=order)
+    table: Table = db_service.get_object_by_id(model=Table, id=order.table)
+    table.state = TableState.ocupied
+    db_service.update_object(model=Table, body=table)
+    return new_order

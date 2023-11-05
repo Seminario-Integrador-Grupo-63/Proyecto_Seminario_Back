@@ -29,7 +29,7 @@ async def change_table_state(table_code:str, current_state: TableState, new_stat
 
     if table.state == current_state:
         table.state = new_state
-        return db_service.update_object(table, Table)
+        return db_service.update_object(model=Table, body=table)
     
 
 async def generate_qrcode(table_id: int):
