@@ -43,6 +43,10 @@ async def get_table_orders(table_code:str):
 async def get_table_billing(table_code: str):
     return await generate_billing(table_code)
 
+@table_router.post("/{table_code}/bill")
+async def billing_confirmation(table_code: str):
+    return await change_table_state(table_code, TableState.payment_ready , TableState.free)
+
 @table_router.post("/{table_code}/init")
 async def init_tables(customer_name:str, table_code:str):
     return await init_table(table_code=table_code, customer_name=customer_name)
