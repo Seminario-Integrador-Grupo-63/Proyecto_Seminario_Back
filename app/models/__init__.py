@@ -10,7 +10,7 @@ class OrderState(StrEnum):
     waiting = "waiting" # /order/{table_code} [POST] Se confirmo la orden y se esta esperando la confirmacion del restaurante
     preparation = "preparation" # /order/preparation/{order_id} El restaurante confirmo la orden
     cancelled = "cancelled" # Cancelado
-    delivered = "delivered" # Entregada en la mesa
+    delivered = "delivered" # /order/deliverd/{order_id} Entregada en la mesa !!!!!!!!!!!! IMPORTANTE !!!!!!!!!!! Este ep se va a cambiar
     closed = "closed" # Pagada
 
 class TableState(StrEnum):

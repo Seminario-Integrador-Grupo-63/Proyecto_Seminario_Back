@@ -153,12 +153,14 @@ async def get_cache_orders(table:Table):
         return None
     details_dict = await group_details(details_list)
     total_price, customer_order_data_list = await get_detail_data_list_and_price(details_dict)
-
+    total_customers = redis_service.get_data(f"{table.qr_id}_customer")
+    confirmed_customers = redis_service.get_data(f"{table.qr_id}_confirmed")
+    print(f"CONFIRMED CUSTOMER!!!!!!!!!!!!!!!!! {confirmed_customers}")
     order_dto = FullOrderDTO(id=None,
                                 date_created=datetime.now().strftime("%d/%m/%Y"),
                                 time_created = datetime.now().strftime("%H:%M:%S"),
-                                total_customers = len(details_dict),
-                                confirmed_customers = len(details_dict),
+                                total_customers = len(total_customers),
+                                confirmed_customers = len(confirmed_customers) if confirmed_customers else 0,
                                 order_details = customer_order_data_list,
                                 total=total_price,
                                 state=OrderState.processing
@@ -215,3 +217,11 @@ async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
     
     return table_grid_list
 
+async def close_table(table_code: str):
+    table: Table = await change_table_state(table_code, TableState.payment_ready , TableState.free)
+    statement = select(Order).where(Order.table == table.id).where(Order.state != OrderState.closed).where(Order.state != OrderState.cancelled).where(Order.state != OrderState.processing)
+    orders: list[Order] = db_service.get_with_filters(statement)
+    for order in orders:
+        order.state = OrderState.closed
+        db_service.update_object(Order, order)
+    redis_service.delete_data(f"{table_code}_sitted")

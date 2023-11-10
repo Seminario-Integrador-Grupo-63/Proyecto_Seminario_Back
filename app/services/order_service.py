@@ -79,3 +79,8 @@ async def confirm_preparation(order_id: int):
     table.state = TableState.ocupied
     db_service.update_object(model=Table, body=table)
     return new_order
+
+async def deliver_order(order_id: int):
+    order: Order = db_service.get_object_by_id(model=Order, id=order_id)
+    order.state = OrderState.delivered
+    db_service.update_object(model=Order, body=order)
