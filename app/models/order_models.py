@@ -37,8 +37,8 @@ class FullOrderDTO(BaseModel):
     total_customers: int = Field(alias="totalCustomers")
     confirmed_customers: int = Field(alias="confirmedCustomers")
     order_details: list[CustomerOrderDetailData] = Field(alias="customerOrderDetails")
-    date_created: str = Field(alias="createdAtDate")
-    time_created: str = Field(alias="createdAtTime")
+    date_created: str | None = Field(alias="createdAtDate", default=None)
+    time_created: str | None = Field(alias="createdAtTime", default=None)
     total: float
     state: OrderState
 
