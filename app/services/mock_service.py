@@ -5,8 +5,8 @@ from models import TableSector, User, Restaurant, Category, Dish, SideDish, Tabl
 import random
 import resources.mock_data as rsc
 
-names = ["Pepe","Carlos", "Juan", "Pablo", "Fede", "Marcos", "Martin", "Monica", "Lucia", "Paola", "Victoria", "Martina", "Daniela", "Agostina", "Agustin", "Gustavo", "La Meles", "Manuela", "Manuel", "Domingo", "Maria", "Marta", "Ezequiel", "Pedro", "Lautaro"]
-lastanames = ["Perez", "Garcia", "Lopez", "Rodriguez", "Tobares", "Aranda", "Vega", "Fernandez", "Frondizi", "Alfonsin","Sarmiento", "Belgrano", "Peron", "Amuchastegui", "Lupi", "Flores", "Tapia", "Rueda", "Juncos", "Alvarez", "Muñoz"]
+names = ["Pepe","Carlos", "Juan", "Pablo", "Fede", "Marcos", "Martin", "Monica", "Lucia", "Paola", "Victoria", "Martina", "Daniela", "Agostina", "Agustin", "Gustavo", "Manuela", "Manuel", "Domingo", "Maria", "Marta", "Ezequiel", "Pedro", "Lautaro"]
+lastanames = ["Perez", "Garcia", "Lopez", "Rodriguez", "Tobares", "Aranda", "Vega", "Fernandez", "Frondizi", "Alfonsin","Sarmiento", "Belgrano", "Peron", "Milei", "Amuchastegui", "Lupi", "Flores", "Tapia", "Rueda", "Juncos", "Alvarez", "Muñoz"]
 order_states_names = ["processing", "waiting", "preparation", "cancelled", "delivered"]
 platos_pricipales_names = ["Milanesa al plato", "Huevo frito", "Sushi", "Pollo a la mostaza", "Tortilla de papa", "Pizza"]
 sanguches_names = ["Pebete", "Lomito", "Lomo ultra mega XXL", "Pizzalomo", "Sanguche de milanesa", "Hamburgesa", "Hamburguesa de hongos"]
@@ -167,9 +167,18 @@ def create_mocks():
     db_service.create_object(user_1)
 
     #Crear categorias
-    category_1 = Category(name = "Bebidas", image= rsc.bebidas, restaurant = restaurant.id)
-    category_2 = Category(name = "Sanguches", image= rsc.sanguches, restaurant = restaurant.id)
-    category_3 = Category(name = "Pizzas", image= rsc.pizzas, restaurant = restaurant.id)
+    category_1 = Category(name = "Bebidas",
+                          image= rsc.bebidas,
+                          restaurant = restaurant.id)
+    
+    category_2 = Category(name = "Sanguches",
+                          image= rsc.sanguches,
+                          restaurant = restaurant.id)
+    
+    category_3 = Category(name = "Pizzas",
+                          image= rsc.pizzas,
+                          restaurant = restaurant.id)
+    
     db_service.create_object(category_1)
     db_service.create_object(category_2)
     db_service.create_object(category_3)
@@ -282,74 +291,73 @@ def create_mocks():
     db_service.create_object(side_dish_2)
 
     #Adjuntar guarniciones
-    for i in range(50):
-        statement = select(Dish).where(Dish.name == 'Lomito completo' and Dish.restaurant == restaurant.id)
-        select_dish_1: Dish = db_service.get_with_filters(statement)[0]
-        
-        statement = select(Dish).where(Dish.name == 'Sanguche de milanesa completo' and Dish.restaurant == restaurant.id)
-        select_dish_2: Dish = db_service.get_with_filters(statement)[0]
-        
-        statement = select(Dish).where(Dish.name == 'Hamburguesa' and Dish.restaurant == restaurant.id)
-        select_dish_3: Dish = db_service.get_with_filters(statement)[0]
+    statement = select(Dish).where(Dish.name == 'Lomito completo' and Dish.restaurant == restaurant.id)
+    select_dish_1: Dish = db_service.get_with_filters(statement)[0]
+    
+    statement = select(Dish).where(Dish.name == 'Sanguche de milanesa completo' and Dish.restaurant == restaurant.id)
+    select_dish_2: Dish = db_service.get_with_filters(statement)[0]
+    
+    statement = select(Dish).where(Dish.name == 'Hamburguesa' and Dish.restaurant == restaurant.id)
+    select_dish_3: Dish = db_service.get_with_filters(statement)[0]
 
-        statement = select(SideDish).where(SideDish.name == 'Papas fritas' and SideDish.restaurant == restaurant.id)
-        select_side_dish_1: SideDish = db_service.get_with_filters(statement)[0]
+    statement = select(SideDish).where(SideDish.name == 'Papas fritas' and SideDish.restaurant == restaurant.id)
+    select_side_dish_1: SideDish = db_service.get_with_filters(statement)[0]
 
-        statement = select(SideDish).where(SideDish.name == 'Aros de cebolla fritos' and SideDish.restaurant == restaurant.id)
-        select_side_dish_2: SideDish = db_service.get_with_filters(statement)[0]
-        
+    statement = select(SideDish).where(SideDish.name == 'Aros de cebolla fritos' and SideDish.restaurant == restaurant.id)
+    select_side_dish_2: SideDish = db_service.get_with_filters(statement)[0]
+    
 
-        side_dish_option_1 = SideDishOptions(dish = select_dish_1.id,
-                                             side_dish = select_side_dish_1.id,
-                                             extraPrice=500)
-        
-        side_dish_option_2 = SideDishOptions(dish = select_dish_1.id,
-                                             side_dish = select_side_dish_2.id,
-                                             extraPrice=500)
-        
-        side_dish_option_3 = SideDishOptions(dish = select_dish_2.id,
-                                             side_dish = select_side_dish_1.id,
-                                             extraPrice=500)
-        
-        side_dish_option_4 = SideDishOptions(dish = select_dish_2.id,
-                                             side_dish = select_side_dish_2.id,
-                                             extraPrice=500)
-        
-        side_dish_option_5 = SideDishOptions(dish = select_dish_3.id,
-                                             side_dish = select_side_dish_1.id,
-                                             extraPrice=500)
-        
-        side_dish_option_6 = SideDishOptions(dish = select_dish_3.id,
-                                             side_dish = select_side_dish_2.id,
-                                             extraPrice=500)
-        
-        db_service.create_object(side_dish_option_1)
-        db_service.create_object(side_dish_option_2)
-        db_service.create_object(side_dish_option_3)
-        db_service.create_object(side_dish_option_4)
-        db_service.create_object(side_dish_option_5)
-        db_service.create_object(side_dish_option_6)
+    side_dish_option_1 = SideDishOptions(dish = select_dish_1.id,
+                                            side_dish = select_side_dish_1.id,
+                                            extraPrice=500)
+    
+    side_dish_option_2 = SideDishOptions(dish = select_dish_1.id,
+                                            side_dish = select_side_dish_2.id,
+                                            extraPrice=500)
+    
+    side_dish_option_3 = SideDishOptions(dish = select_dish_2.id,
+                                            side_dish = select_side_dish_1.id,
+                                            extraPrice=500)
+    
+    side_dish_option_4 = SideDishOptions(dish = select_dish_2.id,
+                                            side_dish = select_side_dish_2.id,
+                                            extraPrice=500)
+    
+    side_dish_option_5 = SideDishOptions(dish = select_dish_3.id,
+                                            side_dish = select_side_dish_1.id,
+                                            extraPrice=500)
+    
+    side_dish_option_6 = SideDishOptions(dish = select_dish_3.id,
+                                            side_dish = select_side_dish_2.id,
+                                            extraPrice=500)
+    
+    db_service.create_object(side_dish_option_1)
+    db_service.create_object(side_dish_option_2)
+    db_service.create_object(side_dish_option_3)
+    db_service.create_object(side_dish_option_4)
+    db_service.create_object(side_dish_option_5)
+    db_service.create_object(side_dish_option_6)
 
     #Crear Sectores y mesas
     for i in range(1,3):
         sector = TableSector(name=f"sector {i}", restaurant=restaurant.id)
         sector: TableSector = db_service.create_object(sector)
-        
+    
         #Crear mesas
         for i in range(1, 15):
             table_1 = Table(restaurant = restaurant.id, sector=sector.id)
-            db_service.create_object(table_1)
-
+            db_service.create_object(table_1)  
+                                      
     # Crear mesa con codigo
     sector = TableSector(name=f"sector 4", restaurant=restaurant.id)
     sector: TableSector = db_service.create_object(sector)
     table_qr_code = Table(restaurant = restaurant.id, qr_id = "a", sector=sector.id)
     db_service.create_object(table_qr_code)
-    
+
     #Crear mosos
     for i in range(1, 3):
         waiter_name = f'{random.choice(names)} {random.choice(lastanames)}'
         waiter_1 = Waiter(name = waiter_name )
         db_service.create_object(waiter_1)
-
+        
     return {"restaurant_id": restaurant.id}
