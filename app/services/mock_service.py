@@ -52,13 +52,13 @@ def create_mocks():
 
     #Crear platos
     statement = select(Category).where(Category.name == "Bebidas" and Category.restaurant == restaurant.id)
-    pizza: Category = db_service.get_with_filters(statement)[0]
+    bebida: Category = db_service.get_with_filters(statement)[0]
 
     statement = select(Category).where(Category.name == "Sandwichs" and Category.restaurant == restaurant.id)
     sanguche: Category = db_service.get_with_filters(statement)[0]
 
     statement = select(Category).where(Category.name == "Pizzas" and Category.restaurant == restaurant.id)
-    bebida: Category = db_service.get_with_filters(statement)[0]
+    pizza: Category = db_service.get_with_filters(statement)[0]
 
 
     dish_1 = Dish(restaurant= restaurant.id,
