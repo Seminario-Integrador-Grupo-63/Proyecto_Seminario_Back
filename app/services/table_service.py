@@ -8,7 +8,7 @@ from fastapi import HTTPException
 import qrcode
 from PIL import Image
 from sqlmodel import select
-from models.order_models import CustomerOrderDetailData, FullOrderDTO, OrderDetailData, SideDishWithPrice
+from models.order_models import CustomerList, CustomerOrderDetailData, FullOrderDTO, OrderDetailData, SideDishWithPrice
 
 from models.table_models import QRcodeData, TableGridList
 from services.db_service import db_service
@@ -34,7 +34,7 @@ async def change_table_state(table_code:str, current_state: TableState, new_stat
 
 async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
-    url = f'http://192.168.100.52:3000/{uuid_code}' #cambiar cuando tengamos variables de entorno
+    url = f'https://654d8f47be3cf11149bbf4bd--genuine-bavarois-cc292a.netlify.app/' #cambiar cuando tengamos variables de entorno
 
     qr = qrcode.QRCode(version=4, box_size=140, border=2)
     qr.add_data(url)
@@ -147,6 +147,15 @@ async def get_completed_orders(table: Table):
         dto_list.append(order_dto)
     return dto_list
 
+async def get_customer_list(total_customer: list, confirmed_customers: list):
+    customer_list = []
+    for customer in total_customer:
+        print(f"CUSTOMER !!!!!!!!!!!!!!!! {customer}")
+        data = CustomerList(customer=str(customer),
+                            confirmed = True if customer in confirmed_customers else False)
+        customer_list.append(data)
+    return customer_list
+
 async def get_cache_orders(table:Table):
     details_list = redis_service.get_data(table.qr_id)
     if not details_list:
@@ -155,7 +164,8 @@ async def get_cache_orders(table:Table):
     total_price, customer_order_data_list = await get_detail_data_list_and_price(details_dict)
     total_customers = redis_service.get_data(f"{table.qr_id}_customer")
     confirmed_customers = redis_service.get_data(f"{table.qr_id}_confirmed")
-    print(f"CONFIRMED CUSTOMER!!!!!!!!!!!!!!!!! {confirmed_customers}")
+    confirmed_list = confirmed_customers if confirmed_customers else []
+    customer_list: CustomerList = await get_customer_list(total_customers, confirmed_list)
     order_dto = FullOrderDTO(id=None,
                                 date_created=datetime.now().strftime("%d/%m/%Y"),
                                 time_created = datetime.now().strftime("%H:%M:%S"),
@@ -163,7 +173,8 @@ async def get_cache_orders(table:Table):
                                 confirmed_customers = len(confirmed_customers) if confirmed_customers else 0,
                                 order_details = customer_order_data_list,
                                 total=total_price,
-                                state=OrderState.processing
+                                state=OrderState.processing,
+                                customerList=customer_list
                             )
     return order_dto
 

@@ -32,6 +32,10 @@ class CustomerOrderDetailData(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
+class CustomerList(BaseModel):
+    customer: str
+    confirmed: bool
+
 class FullOrderDTO(BaseModel):
     id: int | None = None
     total_customers: int = Field(alias="totalCustomers")
@@ -41,6 +45,7 @@ class FullOrderDTO(BaseModel):
     time_created: str | None = Field(alias="createdAtTime", default=None)
     total: float
     state: OrderState
+    customer_list: list[CustomerList] | None = Field(alias="customerList", default=[])
 
     class Config:
         allow_population_by_field_name = True
