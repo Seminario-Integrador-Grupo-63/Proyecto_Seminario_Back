@@ -190,15 +190,19 @@ async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:
     table: Table = await get_table_by_code(table_code)
     statement = select(Order).where(Order.table == table.id).where(Order.state != OrderState.closed).where(Order.state != OrderState.cancelled).where(Order.state != OrderState.processing)
     orders: list[Order] = db_service.get_with_filters(statement)
+    order_details_list = []
     customer_data_list = []
     for order in orders:
 
         statement = select(OrderDetail).where(OrderDetail.order == order.id)
         order_details: list[OrderDetail] = db_service.get_with_filters(statement)
-        detail_dict = await group_details(order_details)
-        total_price, customer_order_data_list = await get_detail_data_list_and_price(detail_dict)
+        order_details_list.extend(order_details)
+
+    detail_dict = await group_details(order_details_list)
         
-        customer_data_list.append(customer_order_data_list)
+    total_price, customer_order_data_list = await get_detail_data_list_and_price(detail_dict)
+        
+    customer_data_list.append(customer_order_data_list)
     
     await change_table_state(table_code, TableState.ocupied, TableState.payment_ready)
     return customer_data_list
