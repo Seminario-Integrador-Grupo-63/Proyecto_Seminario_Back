@@ -1,5 +1,5 @@
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 import io
 import os
 import uuid
@@ -150,7 +150,6 @@ async def get_completed_orders(table: Table):
 async def get_customer_list(total_customer: list, confirmed_customers: list):
     customer_list = []
     for customer in total_customer:
-        print(f"CUSTOMER !!!!!!!!!!!!!!!! {customer}")
         data = CustomerList(customer=str(customer),
                             confirmed = True if customer in confirmed_customers else False)
         customer_list.append(data)
@@ -167,8 +166,8 @@ async def get_cache_orders(table:Table):
     confirmed_list = confirmed_customers if confirmed_customers else []
     customer_list: CustomerList = await get_customer_list(total_customers, confirmed_list)
     order_dto = FullOrderDTO(id=None,
-                                date_created=datetime.now().strftime("%d/%m/%Y"),
-                                time_created = datetime.now().strftime("%H:%M:%S"),
+                                date_created=(datetime.utcnow() + timedelta(hours=-3)).strftime("%d/%m/%Y"),
+                                time_created = (datetime.utcnow() + timedelta(hours=-3)).strftime("%H:%M:%S"),
                                 total_customers = len(total_customers),
                                 confirmed_customers = len(confirmed_customers) if confirmed_customers else 0,
                                 order_details = customer_order_data_list,
