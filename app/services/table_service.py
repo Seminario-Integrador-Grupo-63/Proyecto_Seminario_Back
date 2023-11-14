@@ -205,7 +205,7 @@ async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:
     customer_data_list.append(customer_order_data_list)
     
     await change_table_state(table_code, TableState.ocupied, TableState.payment_ready)
-    return customer_data_list
+    return customer_data_list[0]
     
         
 
