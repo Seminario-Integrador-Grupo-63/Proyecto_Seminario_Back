@@ -166,8 +166,8 @@ async def get_cache_orders(table:Table):
     confirmed_list = confirmed_customers if confirmed_customers else []
     customer_list: CustomerList = await get_customer_list(total_customers, confirmed_list)
     order_dto = FullOrderDTO(id=None,
-                                date_created=(datetime.utcnow() + timedelta(hours=-3)).strftime("%d/%m/%Y"),
-                                time_created = (datetime.utcnow() + timedelta(hours=-3)).strftime("%H:%M:%S"),
+                                date_created=(datetime.now() + timedelta(hours=-3)).strftime("%d/%m/%Y"),
+                                time_created = (datetime.now() + timedelta(hours=-3)).strftime("%H:%M:%S"),
                                 total_customers = len(total_customers),
                                 confirmed_customers = len(confirmed_customers) if confirmed_customers else 0,
                                 order_details = customer_order_data_list,

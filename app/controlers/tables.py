@@ -17,7 +17,7 @@ async def get_table(id: int):
 
 @table_router.get("/grid", response_model=list[TableGridList])
 async def get_grids_tables(restaurant_id: int = Header(...)):
-    return get_tables_grid(restaurant_id=restaurant_id)
+    return await get_tables_grid(restaurant_id=restaurant_id)
 
 @table_router.post("/")
 async def create_table(body: Table):
