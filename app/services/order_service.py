@@ -84,3 +84,8 @@ async def deliver_order(order_id: int):
     order: Order = db_service.get_object_by_id(model=Order, id=order_id)
     order.state = OrderState.delivered
     db_service.update_object(model=Order, body=order)
+
+async def cancel_order(order_id: int):
+    order: Order = db_service.get_object_by_id(model=Order, id=order_id)
+    order.state = OrderState.cancelled
+    db_service.update_object(model=Order, body=order)
