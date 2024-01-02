@@ -15,6 +15,6 @@ async def signup(registration_data: RegistrationData):
 async def login(user: UserData):
     return await login_user(user)
 
-@security_router.get("/emplyees")
+@security_router.get("/employees")
 async def get_users(restaurant_id: int = Header(...)):
     return await get_employee_users(restaurant_id)
