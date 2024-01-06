@@ -43,3 +43,7 @@ async def change_state_to_delivered(order_id: int):
 @order_router.post("cancelled/{order_id}")
 async def order_cancelation(order_id: int):
     return await cancel_order(order_id)
+
+@order_router.post("/creation/{table_code}", response_model=Order)
+async def restaurant_order_creation(table_code: str, order_details: list[OrderDetail]):
+    return await create_order_from_restaurant(table_code, order_details)

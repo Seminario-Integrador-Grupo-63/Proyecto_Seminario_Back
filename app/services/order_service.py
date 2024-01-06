@@ -27,15 +27,7 @@ async def remove_order_detail(table_code: str, order_detail: OrderDetail):
 async def get_order_details(table_code:str):
     return redis_service.get_data(table_code)
 
-async def confirm_order(table_code: str, customer_name:str):
-    confirmed_costumers, _= redis_service.save_set(f"{table_code}_confirmed", customer_name)
-    total_customers = redis_service.get_data(f"{table_code}_customer")
-
-    if not len(confirmed_costumers) == len(total_customers):
-        return {"confirmedCostumers": confirmed_costumers,
-                "totalcostumers": total_customers}
-
-
+async def create_order_for_table(table_code: str) -> Order:
     total_price = 0.0
 
     statement = select(Table).where(Table.qr_id == table_code)
@@ -63,6 +55,17 @@ async def confirm_order(table_code: str, customer_name:str):
     
     return updated_order
 
+async def confirm_order(table_code: str, customer_name:str):
+    confirmed_costumers, _= redis_service.save_set(f"{table_code}_confirmed", customer_name)
+    total_customers = redis_service.get_data(f"{table_code}_customer")
+
+    if not len(confirmed_costumers) == len(total_customers):
+        return {"confirmedCostumers": confirmed_costumers,
+                "totalcostumers": total_customers}
+
+    return await create_order_for_table(table_code)
+    
+
 async def get_full_order(order_id: int):
     order: Order = db_service.get_object_by_id(Order, order_id)
 
@@ -89,3 +92,10 @@ async def cancel_order(order_id: int):
     order: Order = db_service.get_object_by_id(model=Order, id=order_id)
     order.state = OrderState.cancelled
     db_service.update_object(model=Order, body=order)
+
+async def create_order_from_restaurant(table_code: str, order_details: list[OrderDetail]) -> Order:
+    for detail in order_details:
+        await save_order_detail_to_cache(table_code, detail)
+
+    order = await create_order_for_table(table_code)
+    return await confirm_preparation(order_id=order.id)
