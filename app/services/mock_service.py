@@ -211,14 +211,14 @@ def create_mocks():
         sector: TableSector = db_service.create_object(sector)
     
         #Crear mesas
-        for i in range(1, 15):
-            table_1 = Table(restaurant = restaurant.id, sector=sector.id)
+        for j in range(1, 15):
+            table_1 = Table(restaurant = restaurant.id, sector=sector.id, number=int(f"{i}{j}"))
             db_service.create_object(table_1)  
                                       
     # Crear mesa con codigo
     sector = TableSector(name=f"sector 4", restaurant=restaurant.id)
     sector: TableSector = db_service.create_object(sector)
-    table_qr_code = Table(restaurant = restaurant.id, qr_id = "a", sector=sector.id)
+    table_qr_code = Table(restaurant = restaurant.id, qr_id = "a", sector=sector.id, number=55)
     db_service.create_object(table_qr_code)
 
     #Crear mosos

@@ -88,6 +88,7 @@ class Table(SQLModel, table=True):
     restaurant: int = Field(foreign_key="restaurant.id")
     sector: int = Field(foreign_key="tablesector.id")
     state: TableState | None = Field(default=TableState.free)
+    number: int = Field(...)
     
     class Config:
         allow_population_by_field_name = True

@@ -27,11 +27,11 @@ async def create_table(body: Table):
 async def update_table(body: Table):
     return db_service.update_object(Table, body)
 
-@table_router.get("/{table_id}/qrcode")
+@table_router.get("/{table_id}/qrcode", response_model=QRcodeData)
 async def get_qrcode(table_id: int):
     return await generate_qrcode(table_id)
 
-@table_router.post("/{table_id}/qrcode")
+@table_router.post("/{table_id}/qrcode", response_model=Table)
 async def update_qrcode(table_id:int, uuid_code: str):
     return await update_uuid(table_id=table_id, uuid_code=uuid_code)
 
