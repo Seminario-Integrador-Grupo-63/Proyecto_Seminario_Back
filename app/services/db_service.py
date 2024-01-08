@@ -5,7 +5,7 @@ from sqlmodel import SQLModel, Session, create_engine, select, delete
 from models import Category
 
 class DB_Service:
-    db_url = "postgresql://admin:admin@QResto_db:5432/root"
+    db_url = "postgresql://postgres:E1D*E-AGgBg1GCa*b4434fAdbC5ca534@monorail.proxy.rlwy.net:11467/railway"
 
     engine = create_engine(db_url, echo=True)
 

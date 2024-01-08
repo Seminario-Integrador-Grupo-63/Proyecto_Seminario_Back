@@ -3,7 +3,7 @@ import redis
 
 
 class RedisService:
-    redis_client = redis.Redis(host="redis", port=6379)
+    redis_client = redis.Redis(host="redis://default:KbjMlPn4jg4JbjppAg5BNjPKIfA661kf@roundhouse.proxy.rlwy.net", port=41470)
 
     @classmethod
     def save_set(self, key: str, data):
