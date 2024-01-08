@@ -10,7 +10,7 @@ dish_router = APIRouter(prefix="/dish", tags=["Dishes"])
 async def get_dishes(restaurant_id: int = Header(default=None), category_id: int = Header(default=None)):
     return await filter_dish(restaurant_id=restaurant_id, category_id=category_id)
 
-@dish_router.get("/{dish_id}")
+@dish_router.get("/{dish_id}", response_model=DishData)
 async def get_dish(dish_id: int):
     return await get_dish_data(dish_id)
 

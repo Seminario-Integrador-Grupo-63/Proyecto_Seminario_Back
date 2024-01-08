@@ -13,7 +13,7 @@
                 "main:app",
                 "--reload",
                 "--port",
-                "8091"
+                "8095"
             ],
             "jinja": true,
             "justMyCode": true

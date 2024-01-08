@@ -11,9 +11,9 @@ from services.redis_service import redis_service
 async def order_confirmation(data: WebSocketData, sockets: set[WebSocket]):
         
         customer_set = redis_service.get_data(f"{data.table_code}_customer") #pickle.loads(redis_client.get(f"{data.table_code}_customer"))
-        confirmation_set = redis_service.save_set(f"{data.table_code}_confirmed", data.customer) #pickle.loads(redis_client.get(f"{data.table_code}_confirmed")) if redis_client.get(f"{data.table_code}_confirmed") else set()
+        confirmation_set, _ = redis_service.save_set(f"{data.table_code}_confirmed", data.customer) #pickle.loads(redis_client.get(f"{data.table_code}_confirmed")) if redis_client.get(f"{data.table_code}_confirmed") else set()
         
-        confirmation_data = ConfirmationDTO(total_costumers=len(customer_set), confirmed_costumers=len(confirmation_set)).json()
+        confirmation_data = ConfirmationDTO(total_customers=len(customer_set), confirmed_customers=len(confirmation_set)).json()
 
         for socket in sockets:
              socket.send_json(confirmation_data)

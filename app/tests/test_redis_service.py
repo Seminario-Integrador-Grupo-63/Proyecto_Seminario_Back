@@ -11,7 +11,7 @@ def test_save_data():
     redis_service = RedisService()
 
     for item in customer_list:
-        data: set = redis_service.save_set(f"set_{table_code}", item)
+        data, _ = redis_service.save_set(f"set_{table_code}", item)
 
         assert item in data
 

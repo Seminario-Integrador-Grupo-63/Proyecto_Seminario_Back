@@ -1,8 +1,20 @@
 
 from pydantic import BaseModel, Field
 
+from models import Table
+
 
 class QRcodeData(BaseModel):
-    table_id: int = Field(...)
-    uuid_code: str = Field(...)
-    qrcode: str = Field(...)
+    table_id: int = Field(alias="tableId")
+    uuid_code: str = Field(alias="uuidCode")
+    qrcode: str = Field(alias="qrCode")
+
+    class Config:
+        allow_population_by_field_name = True
+    
+class TableGridList(BaseModel):
+    sector: str
+    tables: list[Table] 
+
+    class Config:
+        allow_population_by_field_name = True

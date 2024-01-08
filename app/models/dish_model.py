@@ -9,10 +9,13 @@ class UpdatePriceAction(StrEnum):
     decrease = "decrease"
 
 class SideDishData(BaseModel):
-    side_dish_id: int
-    side_dish_name: str
-    side_dish_description: str
-    extra_price: str
+    side_dish_id: int = Field(alias="id")
+    side_dish_name: str = Field(alias="name")
+    side_dish_description: str = Field(alias="description")
+    extra_price: float = Field(alias="extraPrice")
+
+    class Config:
+        allow_population_by_field_name = True
 
 class DishData(BaseModel):
     dish: Dish = Field(...)
@@ -20,22 +23,31 @@ class DishData(BaseModel):
 
 class UpdatePriceData(BaseModel):
     percentage: float = Field(...)
-    category_id: int | None = None
+    category_id: int | None = Field(default=None, alias="categoryId")
     action: UpdatePriceAction = Field(...)
+
+    class Config:
+        allow_population_by_field_name = True
 
 class OptionPriceData(BaseModel):
     option_name: str
     option_price: str
 
 class DishPriceData(BaseModel):
-    dish_name: str
-    dish_price: str
-    option_prices: list[OptionPriceData] | None = None
+    dish_name: str = Field(alias="dishName")
+    dish_price: str = Field(alias="dishPrice")
+    option_prices: list[OptionPriceData] | None = Field(default=None, alias="optionPrices")
+
+    class Config:
+        allow_population_by_field_name = True
 
 class DishPricesDTO(BaseModel):
     prices_code: str
-    dish_prices: list[DishPriceData]
+    dish_prices: list[DishPriceData] = Field(alias="dishPrices")
 
+    class Config:
+        allow_population_by_field_name = True
+        
 class UpdatePrideCacheData(BaseModel):
     dish: Dish
     options: list[SideDishOptions]

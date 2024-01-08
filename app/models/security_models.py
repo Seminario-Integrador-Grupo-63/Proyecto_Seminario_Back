@@ -5,8 +5,11 @@ from models import Restaurant, User
 
 
 class RegistrationData(BaseModel):
-    restorant_data: Restaurant = Field(...)
-    user_data: User = Field(...)
+    restorant_data: Restaurant = Field(alias="restaurantData")
+    user_data: User = Field(alias="userData")
+
+    class Config:
+        allow_population_by_field_name = True 
 
 class UserData(BaseModel):
     user: str = Field(...)
