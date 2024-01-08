@@ -84,7 +84,7 @@ class TableSector(SQLModel, table=True):
 
 class Table(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    qr_id: str | None = Field(default="", alias="qrID") #uuid4 for a unique qr code id
+    qr_id: str | None = Field(default="", alias="tableCode") #uuid4 for a unique qr code id
     restaurant: int = Field(foreign_key="restaurant.id")
     sector: int = Field(foreign_key="tablesector.id")
     state: TableState | None = Field(default=TableState.free)
