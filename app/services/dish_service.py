@@ -19,12 +19,13 @@ async def get_dish_data(dish_id: int):
     dish = db_service.get_object_by_id(Dish, dish_id)
     side_dish_list = []
     for option in options:
-        side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
-        side_dish_data = SideDishData(side_dish_id= side_dish.id, 
-                                      side_dish_name=side_dish.name,
-                                      side_dish_description=side_dish.description,
-                                      extra_price=option.extra_price)
-        side_dish_list.append(side_dish_data)
+        if option.side_dish:
+            side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
+            side_dish_data = SideDishData(side_dish_id= side_dish.id, 
+                                        side_dish_name=side_dish.name,
+                                        side_dish_description=side_dish.description,
+                                        extra_price=option.extra_price)
+            side_dish_list.append(side_dish_data)
     return DishData(dish=dish, options=side_dish_list)
 
 async def update_all_dishes(update_data: UpdatePriceData):
