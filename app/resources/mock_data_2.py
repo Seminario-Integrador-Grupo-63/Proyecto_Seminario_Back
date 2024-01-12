@@ -121,7 +121,7 @@ category_source = [
                             },
                             {
                                 "name": "Ensalada de Rucuka",
-                                "image": "./resources/images/dishes/quien_come_esto?.jpeg",
+                                "image": "./resources/images/dishes/quien_come_esto.jpeg",
                                 "description": "Ensalada de rucula, cebolla y jamon crudo",
                                 "preparation_time": 15,
                                 "price": 4000.0
