@@ -34,7 +34,7 @@ async def change_table_state(table_code:str, current_state: TableState, new_stat
 
 async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
-    url = f'https://654d8f47be3cf11149bbf4bd--genuine-bavarois-cc292a.netlify.app/' #cambiar cuando tengamos variables de entorno
+    url = f'https://654d8f47be3cf11149bbf4bd--genuine-bavarois-cc292a.netlify.app/' + f'?table_code={uuid_code}' #cambiar cuando tengamos variables de entorno
 
     qr = qrcode.QRCode(version=4, box_size=140, border=2)
     qr.add_data(url)
@@ -204,7 +204,7 @@ async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:
         
     customer_data_list.append(customer_order_data_list)
     
-    await change_table_state(table_code, TableState.ocupied, TableState.payment_ready)
+    await change_table_state(table_code, TableState.occupied, TableState.payment_ready)
     return customer_data_list[0]
     
         
@@ -215,7 +215,7 @@ async def init_table(table_code: str, customer_name: str):
     if not saved:
         raise HTTPException(status_code=400, detail="Ese nombre pertenece a otro miembro de la mesa")
     else:
-        await change_table_state(table_code, TableState.free, TableState.ocupied)
+        await change_table_state(table_code, TableState.free, TableState.occupied)
     
 async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
     statement = select(Table).where(Table.restaurant == restaurant_id)

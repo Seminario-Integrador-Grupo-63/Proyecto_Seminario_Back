@@ -108,6 +108,9 @@ def create_mocks_2():
             if state == OrderState.waiting:
                 table.state = TableState.waiting
                 db_service.update_object(Table, table)
+            else:
+                table.state = TableState.occupied
+                db_service.update_object(Table, table)
             table_list.remove(table)
         
         #creo unas esperando el pago para que se vea en el mapa

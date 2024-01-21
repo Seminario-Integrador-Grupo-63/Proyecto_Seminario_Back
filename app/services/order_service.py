@@ -46,7 +46,7 @@ async def create_order_for_table(table_code: str) -> Order:
     order.total = total_price
     updated_order = db_service.update_object(Order, order)
 
-    await table_service.change_table_state(table_code, TableState.ocupied, TableState.waiting)
+    await table_service.change_table_state(table_code, TableState.occupied, TableState.waiting)
 
     redis_service.delete_data(table_code)
     redis_service.delete_data(f"{table_code}_confirmed")
@@ -79,7 +79,7 @@ async def confirm_preparation(order_id: int):
     order.state = OrderState.preparation
     new_order = db_service.update_object(model=Order, body=order)
     table: Table = db_service.get_object_by_id(model=Table, id=order.table)
-    table.state = TableState.ocupied
+    table.state = TableState.occupied
     db_service.update_object(model=Table, body=table)
     return new_order
 

@@ -15,7 +15,7 @@ class OrderState(StrEnum):
 
 class TableState(StrEnum):
     free = "free" # /table/{table_code}/bill [POST] Desocupada
-    ocupied = "ocupied" # /table/{table_code}/init Ocupada
+    occupied = "occupied" # /table/{table_code}/init Ocupada
     waiting = "waiting" # /order/{table_code} Esperando confirmacion de orden
     payment_ready = "payment_ready" # /table/{table_code}/bill [GET] Cuenta pedida
 

@@ -9,6 +9,19 @@ table_router = APIRouter(prefix="/table", tags=["Tables"])
 async def get_grids_tables(restaurant_id: int = Header(...)):
     return await get_tables_grid(restaurant_id=restaurant_id)
 
+@table_router.get("/sector", response_model=list[TableSector])
+async def get_sectors(restaurant_id: int = Header(...)):
+    statement = select(TableSector).where(TableSector.restaurant == restaurant_id)
+    return db_service.get_with_filters(statement)
+
+@table_router.post("/sector")
+async def create_table(body: TableSector):
+    return db_service.create_object(body)
+
+@table_router.put("/sector")
+async def update_table(body: TableSector):
+    return db_service.update_object(TableSector, body)
+
 @table_router.get("/", response_model=list[Table])
 async def get_tables(restaurant_id: int = Header(...)):
     statement = select(Table).where(Table.restaurant == restaurant_id)
@@ -25,6 +38,11 @@ async def create_table(body: Table):
 @table_router.put("/")
 async def update_table(body: Table):
     return db_service.update_object(Table, body)
+
+@table_router.delete("/{id}")
+async def remove_table(id:int):
+    return db_service.delete_dable(Table, [Table.id == id])
+
 
 @table_router.get("/{table_id}/qrcode", response_model=QRcodeData)
 async def get_qrcode(table_id: int):
@@ -50,15 +68,4 @@ async def billing_confirmation(table_code: str):
 async def init_tables(customer_name:str, table_code:str):
     return await init_table(table_code=table_code, customer_name=customer_name)
 
-@table_router.get("/sector")
-async def get_sectors(restaurant_id: int = Header(...)):
-    statement = select(TableSector).where(TableSector.restaurant == restaurant_id)
-    return db_service.get_with_filters(statement)
 
-@table_router.post("/sector")
-async def create_table(body: TableSector):
-    return db_service.create_object(body)
-
-@table_router.put("/sector")
-async def update_table(body: TableSector):
-    return db_service.update_object(Table, body)
