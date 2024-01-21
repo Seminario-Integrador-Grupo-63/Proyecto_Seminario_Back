@@ -51,3 +51,7 @@ class DishPricesDTO(BaseModel):
 class UpdatePrideCacheData(BaseModel):
     dish: Dish
     options: list[SideDishOptions]
+
+class MenuModel(BaseModel):
+    category: Category
+    dishes: list[DishData]

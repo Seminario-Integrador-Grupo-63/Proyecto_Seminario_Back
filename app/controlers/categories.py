@@ -2,9 +2,15 @@
 from fastapi import APIRouter, Header
 from sqlmodel import select
 from models import Category
+from models.dish_model import MenuModel
 from services.db_service import db_service
+from services.dish_service import get_menu
 
 category_router = APIRouter(prefix="/category", tags=["Categories"])
+
+@category_router.get("/menu", response_model=list[MenuModel])
+async def get_all_data(restaurant_id: int = Header(...)):
+    return await get_menu(restaurant_id = restaurant_id)
 
 @category_router.get("/", response_model=list[Category])
 async def get_categories(restaurant_id: int = Header(...)):
@@ -22,3 +28,4 @@ async def create_category(category_body: Category):
 @category_router.put("/")
 async def update_category(category_body: Category):
     return db_service.update_object(Category, category_body)
+

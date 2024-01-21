@@ -1,8 +1,8 @@
 
 import uuid
 from sqlmodel import select
-from models import Dish, SideDish, SideDishOptions
-from models.dish_model import DishData, DishPriceData, DishPricesDTO, OptionPriceData, SideDishData, UpdatePriceAction, UpdatePriceData, UpdatePrideCacheData
+from models import Category, Dish, SideDish, SideDishOptions
+from models.dish_model import DishData, DishPriceData, DishPricesDTO, MenuModel, OptionPriceData, SideDishData, UpdatePriceAction, UpdatePriceData, UpdatePrideCacheData
 from services.db_service import db_service
 from services.redis_service import redis_service
 
@@ -111,3 +111,20 @@ async def confirm_new_prices(uuid_code: str):
         db_service.update_object(model=Dish, body=dish)
         for option in option_list:
             db_service.update_object(model=SideDishOptions, body=option)
+
+async def get_menu(restaurant_id: int):
+    data = []
+    statement = select(Category).where(Category.restaurant == restaurant_id)
+    categories: list[Category] =  db_service.get_with_filters(statement)
+    for categorie in categories:
+        statement = select(Dish).where(Dish.category == categorie.id)
+        dishes = db_service.get_with_filters(statement)
+        dish_data_list = []
+        for dish in dishes:
+            dish_data = await get_dish_data(dish.id)
+            dish_data_list.append(dish_data)
+        
+        menu_data: MenuModel = MenuModel(category=categorie,
+                                         dishes=dish_data_list)
+        data.append(menu_data)
+    return data
