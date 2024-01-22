@@ -56,7 +56,14 @@ class DB_Service:
             return result if result else []
     
     @classmethod
-    def delete_dable(self, model:SQLModel, where_statement: list):
+    def delete_dable(self, model:SQLModel):
+        with Session(self.engine) as session:
+            statement = delete(model)
+            result = session.exec(statement)
+            session.commit()
+    
+    @classmethod
+    def delete_row(self, model:SQLModel, where_statement: list):
         with Session(self.engine) as session:
             statement = delete(model).where(*where_statement)
             result = session.exec(statement)

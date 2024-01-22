@@ -41,7 +41,7 @@ async def update_table(body: Table):
 
 @table_router.delete("/{id}")
 async def remove_table(id:int):
-    return db_service.delete_dable(Table, [Table.id == id])
+    return db_service.delete_row(Table, [Table.id == id])
 
 
 @table_router.get("/{table_id}/qrcode", response_model=QRcodeData)
