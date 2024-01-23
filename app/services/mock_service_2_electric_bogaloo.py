@@ -1,5 +1,6 @@
 
 import base64
+from datetime import timedelta
 import random
 import uuid
 from models import *
@@ -81,6 +82,37 @@ def create_mocks_2():
             table: Table = db_service.create_object(table)
             table_list.append(table)
         
+        #Creo ordenes viejas
+        for i in range(0,50):
+            table = random.choice(table_list)
+            state =random.choice([OrderState.closed, OrderState.cancelled])
+            days = random.randint(0, 5)
+            hours = random.randint(5, 10)
+            minutes = random.randint(0,60)
+            time = datetime.now() - timedelta(days=days, hours=hours, minutes=minutes)
+            order = Order(table=table.id, createdAt=time, state=state, restaurant=restaurant_1.id)
+            order: Order = db_service.create_object(order) 
+
+            counter = 0.0
+            for i in range(0,random.randint(2,5)):
+                dish: Dish = random.choice(dish_list)
+                options = auxiliar_list.get(ds.name)
+                if options:
+                    option = random.choice(options)
+                else:
+                    option = {"id": None, "extra": 0.0} 
+                
+                ammount = random.randint(1,3)
+                sub_total =(dish.price+option["extra"]) * ammount
+                name = random.choice(names)
+                order_detail = OrderDetail(order=order.id, dish=dish.id, sideDish=option["id"],amount=ammount, subTotal=sub_total,customerName=name)
+                counter+= order_detail.sub_total
+                db_service.create_object(order_detail)
+            
+            order.total = counter
+            db_service.update_object(Order, order)
+
+
         for i in range(0,6):
             table = random.choice(table_list)
             state = random.choice([OrderState.preparation, OrderState.waiting, OrderState.delivered])

@@ -14,7 +14,7 @@ async def create_new_dish(dish: Dish):
     return dish
 
 async def get_dish_data(dish_id: int):
-    statement = select(SideDishOptions).where(SideDishOptions.dish == dish_id) 
+    statement = select(SideDishOptions).where(SideDishOptions.dish == dish_id, SideDishOptions == True) 
     options: list[SideDishOptions] = db_service.get_with_filters(statement)
     dish = db_service.get_object_by_id(Dish, dish_id)
     side_dish_list = []
@@ -63,6 +63,7 @@ async def filter_dish(restaurant_id: int | None = None, category_id: int | None 
             statement = select(Dish).where(Dish.category == category_id)
     else:
         raise Exception("No id provided")
+    statement = statement.where(Dish.is_active==True)
     return db_service.get_with_filters(statement)
 
 async def get_new_prices(update_data: UpdatePriceData, dish_list: list[Dish]):
@@ -114,10 +115,10 @@ async def confirm_new_prices(uuid_code: str):
 
 async def get_menu(restaurant_id: int):
     data = []
-    statement = select(Category).where(Category.restaurant == restaurant_id)
+    statement = select(Category).where(Category.restaurant == restaurant_id, Category.is_active == True)
     categories: list[Category] =  db_service.get_with_filters(statement)
     for categorie in categories:
-        statement = select(Dish).where(Dish.category == categorie.id)
+        statement = select(Dish).where(Dish.category == categorie.id, Dish.is_active == True)
         dishes = db_service.get_with_filters(statement)
         dish_data_list = []
         for dish in dishes:

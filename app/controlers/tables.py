@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, Response, status
 from models import Table, TableSector
 from services.db_service import db_service
 from services.table_service import *
@@ -22,6 +22,19 @@ async def create_table(body: TableSector):
 async def update_table(body: TableSector):
     return db_service.update_object(TableSector, body)
 
+@table_router.delete("/sector/{id}")
+async def remove_sector(id:int):
+    body: TableSector = db_service.get_object_by_id(TableSector,id)
+    body.is_active = False
+    db_service.update_object(TableSector,body)
+
+    statements = select(Table).where(Table.sector==id)
+    tables: list[Table] = db_service.get_with_filters(statements)
+    for table in tables:
+        table.is_active = False
+        db_service.update_object(SideDishOptions, table)
+    return Response(status_code=status.HTTP_200_OK)
+
 @table_router.get("/", response_model=list[Table])
 async def get_tables(restaurant_id: int = Header(...)):
     statement = select(Table).where(Table.restaurant == restaurant_id)
@@ -41,8 +54,10 @@ async def update_table(body: Table):
 
 @table_router.delete("/{id}")
 async def remove_table(id:int):
-    return db_service.delete_row(Table, [Table.id == id])
-
+    body: Table = db_service.get_object_by_id(Table,id)
+    body.is_active = False
+    db_service.update_object(Table,body)
+    return Response(status_code=status.HTTP_200_OK)
 
 @table_router.get("/{table_id}/qrcode", response_model=QRcodeData)
 async def get_qrcode(table_id: int):

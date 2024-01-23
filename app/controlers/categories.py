@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, Response, status
 from sqlmodel import select
 from models import Category
 from models.dish_model import MenuModel
@@ -14,7 +14,7 @@ async def get_all_data(restaurant_id: int = Header(...)):
 
 @category_router.get("/", response_model=list[Category])
 async def get_categories(restaurant_id: int = Header(...)):
-    statement = select(Category).where(Category.restaurant == restaurant_id)
+    statement = select(Category).where(Category.restaurant == restaurant_id, Category.is_active == True)
     return db_service.get_with_filters(statement)
 
 @category_router.get("/{category_id}")
@@ -28,4 +28,11 @@ async def create_category(category_body: Category):
 @category_router.put("/")
 async def update_category(category_body: Category):
     return db_service.update_object(Category, category_body)
+
+@category_router.delete("/{id}")
+async def remove_category(id:int):
+    body: Category = db_service.get_object_by_id(Category,id)
+    body.is_active = False
+    db_service.update_object(Category,body)
+    return Response(status_code=status.HTTP_200_OK)
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, Response, status
 from models import Dish
 from models.dish_model import UpdatePriceData
 from services.db_service import db_service
@@ -29,3 +29,16 @@ async def update_prices(body: UpdatePriceData, restaurant_id: int = Header(defau
 @dish_router.post("/update_prices/{uuid_code}")
 async def confirm_prices(uuid_code: str):
     return await confirm_new_prices(uuid_code)
+
+@dish_router.delete("/{id}")
+async def remove_dish(id:int):
+    body: Dish = db_service.get_object_by_id(Dish,id)
+    body.is_active = False
+    db_service.update_object(Dish,body)
+
+    statements = select(SideDishOptions).where(SideDishOptions.dish==id)
+    options: list[SideDishOptions] = db_service.get_with_filters(statements)
+    for option in options:
+        option.is_active = False
+        db_service.update_object(SideDishOptions, option)
+    return Response(status_code=status.HTTP_200_OK)

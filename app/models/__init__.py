@@ -44,6 +44,7 @@ class Category(SQLModel, table=True):
     name: str = Field(...)
     image: Optional[str] = Field(default="")
     restaurant: int = Field(foreign_key="restaurant.id") 
+    is_active: bool | None = True
 
 class Dish(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -54,6 +55,7 @@ class Dish(SQLModel, table=True):
     category: int = Field(foreign_key="category.id")
     price: float = Field(...)
     restaurant: int = Field(foreign_key="restaurant.id") #Este no deberia ir pero es mas facil filrar asi
+    is_active: bool | None = True
     
     class Config:
         allow_population_by_field_name = True
@@ -64,6 +66,7 @@ class SideDish(SQLModel, table=True):
     description: Optional[bytes] = None 
     image: Optional[bytes] = None
     restaurant: int = Field(foreign_key="restaurant.id")
+    is_active: bool | None = True
 
     class Config:
         extra = Extra.allow
@@ -73,6 +76,7 @@ class SideDishOptions(SQLModel, table=True):
     dish: int = Field(foreign_key="dish.id")
     side_dish: Optional[int] = Field(foreign_key="sidedish.id", nullable=True, alias="sideDish")
     extra_price: float = Field(nullable=True, default=0.0, alias="extraPrice")
+    is_active: bool | None = True
 
     class Config:
         allow_population_by_field_name = True
@@ -81,6 +85,7 @@ class TableSector(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
     restaurant: int = Field(foreign_key="restaurant.id")
+    is_active: bool | None = True
 
 class Table(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -89,6 +94,7 @@ class Table(SQLModel, table=True):
     sector: int = Field(foreign_key="tablesector.id")
     state: TableState | None = Field(default=TableState.free)
     number: int = Field(...)
+    is_active: bool | None = True
     
     class Config:
         allow_population_by_field_name = True

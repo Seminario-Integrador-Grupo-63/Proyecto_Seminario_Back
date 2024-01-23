@@ -12,7 +12,7 @@ from models.order_models import CustomerList, CustomerOrderDetailData, FullOrder
 
 from models.table_models import QRcodeData, TableGridList
 from services.db_service import db_service
-from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table, TableState
+from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table, TableSector, TableState
 from services.order_service import get_full_order
 from services.redis_service import redis_service
 
@@ -220,7 +220,7 @@ async def init_table(table_code: str, customer_name: str):
         await change_table_state(table_code, TableState.free, TableState.occupied)
     
 async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
-    statement = select(Table).where(Table.restaurant == restaurant_id)
+    statement = select(Table).where(Table.restaurant == restaurant_id, Table.is_active==True)
     tables = db_service.get_with_filters(statement)
 
     sector_table_dict = {}
@@ -230,6 +230,10 @@ async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
         sector_table_dict[table.sector].append(table)
     
     table_grid_list = [TableGridList(sector=sector, tables=tables) for sector, tables in sector_table_dict.items()]
+
+    for sector in table_grid_list:
+        sector_data: TableSector = db_service.get_object_by_id(TableSector, sector.sector)
+        sector.sector = sector_data
     
     return table_grid_list
 
