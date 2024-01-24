@@ -14,7 +14,7 @@ async def create_new_dish(dish: Dish):
     return dish
 
 async def get_dish_data(dish_id: int):
-    statement = select(SideDishOptions).where(SideDishOptions.dish == dish_id, SideDishOptions == True) 
+    statement = select(SideDishOptions).where(SideDishOptions.dish == dish_id, SideDishOptions.is_active == True) 
     options: list[SideDishOptions] = db_service.get_with_filters(statement)
     dish = db_service.get_object_by_id(Dish, dish_id)
     side_dish_list = []

@@ -22,7 +22,8 @@ async def get_table_by_code(table_code: str):
         statement = select(Table).where(Table.qr_id == table_code)
         return db_service.get_with_filters(statement)[0]
     except Exception as e:
-        raise(f"No se pudo encontrar la mesa con codigo {table_code} error {e}")
+        message = f"No se pudo encontrar la mesa con codigo {table_code} error {e}"
+        raise Exception(message)
     
 async def change_table_state(table_code:str, current_state: TableState, new_state: TableState):
     table: Table = await get_table_by_code(table_code=table_code)
