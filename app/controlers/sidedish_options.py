@@ -8,7 +8,8 @@ sidedish_option_router = APIRouter(prefix="/side-dish-options", tags=["Side Dish
 @sidedish_option_router.get("/", response_model=list[SideDishOptions])
 async def get_options():
     statement = select(SideDishOptions).where(SideDishOptions.is_active == True)
-    return db_service.get_with_filters(statement)
+    value = db_service.get_with_filters(statement)
+    return value
 
 @sidedish_option_router.get("/{id}")
 async def get_options(id: int):

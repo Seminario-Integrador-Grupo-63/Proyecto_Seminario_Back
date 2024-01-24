@@ -41,9 +41,9 @@ async def create_user(registration_data: RegistrationData):
 async def login_user(user_data: UserData):
     statement = select(User).where(User.user == user_data.user, User.password == user_data.password)
     user = db_service.get_with_filters(statement)
-    return user[0]
+    return user_data
 
 async def get_employee_users(restaurant_id: str):
     statement = select(User).where(User.restaurant == restaurant_id, User.role == UserRolesEnum.employee)
-    users = db_service.get_with_filters(statement)
+    users: list[User] = db_service.get_with_filters(statement)
     return users

@@ -13,7 +13,7 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 
-sqlmodel
+sqlmodel==0.0.13
 alembic
 
 #For tests
