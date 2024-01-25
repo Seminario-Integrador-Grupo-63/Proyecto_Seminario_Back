@@ -94,7 +94,7 @@ async def cancel_order(order_id: int):
     db_service.update_object(model=Order, body=order)
 
     table: Table = db_service.get_object_by_id(model=Table, id=order.table)
-    order.state = TableState.occupied
+    table.state = TableState.occupied
     db_service.update_object(model=Table, body=table)
 
 async def create_order_from_restaurant(table_code: str, order_details: list[OrderDetail]) -> Order:
