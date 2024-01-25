@@ -2,10 +2,11 @@
 from fastapi import HTTPException
 from sqlmodel import SQLModel, Session, create_engine, select, delete
 
-from models import Category
+from utils.config import settings
+
 
 class DB_Service:
-    db_url = "postgresql://admin:admin@QResto_db:5432/root"
+    db_url = settings.MYSQL_URL
 
     engine = create_engine(db_url, echo=True)
 

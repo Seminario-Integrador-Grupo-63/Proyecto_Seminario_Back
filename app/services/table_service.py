@@ -15,6 +15,7 @@ from services.db_service import db_service
 from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table, TableSector, TableState
 from services.order_service import get_full_order
 from services.redis_service import redis_service
+from utils.config import settings
 
 
 async def get_table_by_code(table_code: str):
@@ -37,7 +38,7 @@ async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
     
     # url = f'https://654d8f47be3cf11149bbf4bd--genuine-bavarois-cc292a.netlify.app/' + f'?table_code={uuid_code}' #cambiar cuando tengamos variables de entorno
-    url = f'http:192.168.0.111:3001' + f'?table_code={uuid_code}'
+    url = f'{settings.FRONT_URL}?table_code={uuid_code}'
     
     qr = qrcode.QRCode(version=4, box_size=140, border=2)
     qr.add_data(url)
