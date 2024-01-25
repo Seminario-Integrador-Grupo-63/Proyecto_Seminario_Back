@@ -53,8 +53,6 @@ class DB_Service:
     def get_with_filters(self, statement):
         with Session(self.engine) as session:
             result = session.exec(statement).all()
-            if len(result) == 1 and isinstance(result[0], tuple):
-                result = [result[0][0]]
             return result if result else []
     
     @classmethod

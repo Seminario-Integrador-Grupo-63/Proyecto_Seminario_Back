@@ -40,7 +40,7 @@ async def confirm_order_preparation(order_id: int):
 async def change_state_to_delivered(order_id: int):
     return await deliver_order(order_id=order_id)
 
-@order_router.post("cancelled/{order_id}")
+@order_router.post("/cancelled/{order_id}")
 async def order_cancelation(order_id: int):
     return await cancel_order(order_id)
 

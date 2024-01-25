@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Union, Any
 from jose import jwt
 from passlib.context import CryptContext
-from sqlalchemy import select
+from sqlmodel import select
 
 from models import Restaurant, User, UserRolesEnum
 from models.security_models import RegistrationData, UserData
@@ -41,7 +41,7 @@ async def create_user(registration_data: RegistrationData):
 async def login_user(user_data: UserData):
     statement = select(User).where(User.user == user_data.user, User.password == user_data.password)
     user = db_service.get_with_filters(statement)
-    return user_data
+    return user
 
 async def get_employee_users(restaurant_id: str):
     statement = select(User).where(User.restaurant == restaurant_id, User.role == UserRolesEnum.employee)
