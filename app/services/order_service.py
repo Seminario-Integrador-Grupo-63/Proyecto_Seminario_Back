@@ -1,9 +1,9 @@
 import pickle
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlmodel import select
 from models import Order, OrderDetail, OrderState, Table, TableState
-from models.order_models import FullOrderData
+from models.order_models import FullOrderDTO, FullOrderData
 from services import table_service
 from services.db_service import db_service
 from services.redis_service import redis_service
@@ -46,7 +46,7 @@ async def create_order_for_table(table_code: str) -> Order:
     order.total = total_price
     updated_order = db_service.update_object(Order, order)
 
-    await table_service.change_table_state(table_code, TableState.ocupied, TableState.waiting)
+    await table_service.change_table_state(table_code, TableState.occupied, TableState.waiting)
 
     redis_service.delete_data(table_code)
     redis_service.delete_data(f"{table_code}_confirmed")
@@ -79,7 +79,7 @@ async def confirm_preparation(order_id: int):
     order.state = OrderState.preparation
     new_order = db_service.update_object(model=Order, body=order)
     table: Table = db_service.get_object_by_id(model=Table, id=order.table)
-    table.state = TableState.ocupied
+    table.state = TableState.occupied
     db_service.update_object(model=Table, body=table)
     return new_order
 
@@ -93,9 +93,41 @@ async def cancel_order(order_id: int):
     order.state = OrderState.cancelled
     db_service.update_object(model=Order, body=order)
 
+    table: Table = db_service.get_object_by_id(model=Table, id=order.table)
+    table.state = TableState.occupied
+    db_service.update_object(model=Table, body=table)
+
 async def create_order_from_restaurant(table_code: str, order_details: list[OrderDetail]) -> Order:
     for detail in order_details:
         await save_order_detail_to_cache(table_code, detail)
 
     order = await create_order_for_table(table_code)
     return await confirm_preparation(order_id=order.id)
+
+async def filter_orders(restaurant_id: int, date_from: datetime | None, date_to: datetime | None):
+    time = date_from if date_from else datetime.now() - timedelta(days=1) 
+    statement = select(Order).where(Order.restaurant == restaurant_id, Order.created_at >= time)
+    if date_to:
+        statement = statement.where(Order.created_at <= date_to)
+    order_list: list[Order] = db_service.get_with_filters(statement)
+    dto_list: list[FullOrderDTO] = []
+    for order in order_list:
+
+        statement = select(OrderDetail).where(OrderDetail.order == order.id)
+        order_details: list[OrderDetail] = db_service.get_with_filters(statement)
+
+        details_dict = await table_service.group_details(order_details)
+        
+        total_price, customer_order_data_list = await table_service.get_detail_data_list_and_price(details_dict)
+
+        order_dto = FullOrderDTO(id=order.id,
+                                    date_created=order.created_at.strftime("%d/%m/%Y"),
+                                    time_created = order.created_at.strftime("%H:%M:%S"),
+                                    total_customers = len(details_dict),
+                                    confirmed_customers = len(details_dict),
+                                    order_details = customer_order_data_list,
+                                    total=total_price,
+                                    state=order.state
+                                )
+        dto_list.append(order_dto)
+    return dto_list

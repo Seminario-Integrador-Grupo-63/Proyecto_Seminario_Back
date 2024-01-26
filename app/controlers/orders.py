@@ -6,11 +6,11 @@ from services.order_service import *
 
 order_router = APIRouter(prefix="/order", tags=["Orders"])
 
-@order_router.get("/", response_model=list[Order])
-async def get_orders(restaurant_id: int = Header(...)):
-    time = datetime.now() - timedelta(days=1)
-    statement = select(Order).where(Order.restaurant == restaurant_id, Order.created_at >= time)
-    return db_service.get_with_filters(statement)
+@order_router.get("/", response_model=list[FullOrderDTO])
+async def get_orders(restaurant_id: int = Header(...),
+                     date_from: datetime | None = None,
+                     date_to: datetime | None = None):
+    return await filter_orders(restaurant_id, date_from, date_to)
 
 @order_router.get("/{id}")
 async def get_order(id: int):
@@ -40,7 +40,7 @@ async def confirm_order_preparation(order_id: int):
 async def change_state_to_delivered(order_id: int):
     return await deliver_order(order_id=order_id)
 
-@order_router.post("cancelled/{order_id}")
+@order_router.post("/cancelled/{order_id}")
 async def order_cancelation(order_id: int):
     return await cancel_order(order_id)
 

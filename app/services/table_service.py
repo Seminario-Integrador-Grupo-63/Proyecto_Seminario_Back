@@ -12,9 +12,10 @@ from models.order_models import CustomerList, CustomerOrderDetailData, FullOrder
 
 from models.table_models import QRcodeData, TableGridList
 from services.db_service import db_service
-from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table, TableState
+from models import Dish, Order, OrderDetail, OrderState, SideDish, SideDishOptions, Table, TableSector, TableState
 from services.order_service import get_full_order
 from services.redis_service import redis_service
+from utils.config import settings
 
 
 async def get_table_by_code(table_code: str):
@@ -22,7 +23,8 @@ async def get_table_by_code(table_code: str):
         statement = select(Table).where(Table.qr_id == table_code)
         return db_service.get_with_filters(statement)[0]
     except Exception as e:
-        raise(f"No se pudo encontrar la mesa con codigo {table_code} error {e}")
+        message = f"No se pudo encontrar la mesa con codigo {table_code} error {e}"
+        raise Exception(message)
     
 async def change_table_state(table_code:str, current_state: TableState, new_state: TableState):
     table: Table = await get_table_by_code(table_code=table_code)
@@ -34,8 +36,10 @@ async def change_table_state(table_code:str, current_state: TableState, new_stat
 
 async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
-    url = f'https://654d8f47be3cf11149bbf4bd--genuine-bavarois-cc292a.netlify.app/' #cambiar cuando tengamos variables de entorno
-
+    
+    # url = f'https://654d8f47be3cf11149bbf4bd--genuine-bavarois-cc292a.netlify.app/' + f'?table_code={uuid_code}' #cambiar cuando tengamos variables de entorno
+    url = f'{settings.FRONT_URL}?table_code={uuid_code}'
+    
     qr = qrcode.QRCode(version=4, box_size=140, border=2)
     qr.add_data(url)
     qr.make()
@@ -204,7 +208,7 @@ async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:
         
     customer_data_list.append(customer_order_data_list)
     
-    await change_table_state(table_code, TableState.ocupied, TableState.payment_ready)
+    await change_table_state(table_code, TableState.occupied, TableState.payment_ready)
     return customer_data_list[0]
     
         
@@ -215,10 +219,10 @@ async def init_table(table_code: str, customer_name: str):
     if not saved:
         raise HTTPException(status_code=400, detail="Ese nombre pertenece a otro miembro de la mesa")
     else:
-        await change_table_state(table_code, TableState.free, TableState.ocupied)
+        await change_table_state(table_code, TableState.free, TableState.occupied)
     
 async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
-    statement = select(Table).where(Table.restaurant == restaurant_id)
+    statement = select(Table).where(Table.restaurant == restaurant_id, Table.is_active==True)
     tables = db_service.get_with_filters(statement)
 
     sector_table_dict = {}
@@ -228,6 +232,10 @@ async def get_tables_grid(restaurant_id: int) -> list[TableGridList]:
         sector_table_dict[table.sector].append(table)
     
     table_grid_list = [TableGridList(sector=sector, tables=tables) for sector, tables in sector_table_dict.items()]
+
+    for sector in table_grid_list:
+        sector_data: TableSector = db_service.get_object_by_id(TableSector, sector.sector)
+        sector.sector = sector_data
     
     return table_grid_list
 

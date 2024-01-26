@@ -1,9 +1,10 @@
 import pickle
 import redis
+from utils.config import settings
 
 
 class RedisService:
-    redis_client = redis.Redis(host="redis://default:KbjMlPn4jg4JbjppAg5BNjPKIfA661kf@roundhouse.proxy.rlwy.net", port=41470)
+    redis_client = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
 
     @classmethod
     def save_set(self, key: str, data):

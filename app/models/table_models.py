@@ -1,7 +1,7 @@
 
 from pydantic import BaseModel, Field
 
-from models import Table
+from models import Table, TableSector
 
 
 class QRcodeData(BaseModel):
@@ -13,7 +13,7 @@ class QRcodeData(BaseModel):
         allow_population_by_field_name = True
     
 class TableGridList(BaseModel):
-    sector: str
+    sector: str | TableSector
     tables: list[Table] 
 
     class Config:

@@ -2,10 +2,11 @@
 from fastapi import HTTPException
 from sqlmodel import SQLModel, Session, create_engine, select, delete
 
-from models import Category
+from utils.config import settings
+
 
 class DB_Service:
-    db_url = "postgresql://postgres:E1D*E-AGgBg1GCa*b4434fAdbC5ca534@monorail.proxy.rlwy.net:11467/railway"
+    db_url = settings.MYSQL_URL
 
     engine = create_engine(db_url, echo=True)
 
@@ -59,6 +60,13 @@ class DB_Service:
     def delete_dable(self, model:SQLModel):
         with Session(self.engine) as session:
             statement = delete(model)
+            result = session.exec(statement)
+            session.commit()
+    
+    @classmethod
+    def delete_row(self, model:SQLModel, where_statement: list):
+        with Session(self.engine) as session:
+            statement = delete(model).where(*where_statement)
             result = session.exec(statement)
             session.commit()
         

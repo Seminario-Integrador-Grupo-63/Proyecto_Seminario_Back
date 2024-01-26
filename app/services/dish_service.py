@@ -1,8 +1,8 @@
 
 import uuid
 from sqlmodel import select
-from models import Dish, SideDish, SideDishOptions
-from models.dish_model import DishData, DishPriceData, DishPricesDTO, OptionPriceData, SideDishData, UpdatePriceAction, UpdatePriceData, UpdatePrideCacheData
+from models import Category, Dish, SideDish, SideDishOptions
+from models.dish_model import DishData, DishPriceData, DishPricesDTO, MenuModel, OptionPriceData, SideDishData, UpdatePriceAction, UpdatePriceData, UpdatePrideCacheData
 from services.db_service import db_service
 from services.redis_service import redis_service
 
@@ -14,17 +14,18 @@ async def create_new_dish(dish: Dish):
     return dish
 
 async def get_dish_data(dish_id: int):
-    statement = select(SideDishOptions).where(SideDishOptions.dish == dish_id) 
+    statement = select(SideDishOptions).where(SideDishOptions.dish == dish_id, SideDishOptions.is_active == True) 
     options: list[SideDishOptions] = db_service.get_with_filters(statement)
     dish = db_service.get_object_by_id(Dish, dish_id)
     side_dish_list = []
     for option in options:
-        side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
-        side_dish_data = SideDishData(side_dish_id= side_dish.id, 
-                                      side_dish_name=side_dish.name,
-                                      side_dish_description=side_dish.description,
-                                      extra_price=option.extra_price)
-        side_dish_list.append(side_dish_data)
+        if option.side_dish:
+            side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
+            side_dish_data = SideDishData(side_dish_id= side_dish.id, 
+                                        side_dish_name=side_dish.name,
+                                        side_dish_description=side_dish.description,
+                                        extra_price=option.extra_price)
+            side_dish_list.append(side_dish_data)
     return DishData(dish=dish, options=side_dish_list)
 
 async def update_all_dishes(update_data: UpdatePriceData):
@@ -62,6 +63,7 @@ async def filter_dish(restaurant_id: int | None = None, category_id: int | None 
             statement = select(Dish).where(Dish.category == category_id)
     else:
         raise Exception("No id provided")
+    statement = statement.where(Dish.is_active==True)
     return db_service.get_with_filters(statement)
 
 async def get_new_prices(update_data: UpdatePriceData, dish_list: list[Dish]):
@@ -110,3 +112,20 @@ async def confirm_new_prices(uuid_code: str):
         db_service.update_object(model=Dish, body=dish)
         for option in option_list:
             db_service.update_object(model=SideDishOptions, body=option)
+
+async def get_menu(restaurant_id: int):
+    data = []
+    statement = select(Category).where(Category.restaurant == restaurant_id, Category.is_active == True)
+    categories: list[Category] =  db_service.get_with_filters(statement)
+    for categorie in categories:
+        statement = select(Dish).where(Dish.category == categorie.id, Dish.is_active == True)
+        dishes = db_service.get_with_filters(statement)
+        dish_data_list = []
+        for dish in dishes:
+            dish_data = await get_dish_data(dish.id)
+            dish_data_list.append(dish_data)
+        
+        menu_data: MenuModel = MenuModel(category=categorie,
+                                         dishes=dish_data_list)
+        data.append(menu_data)
+    return data

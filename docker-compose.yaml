@@ -7,7 +7,11 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - 8000:8000
-    #environment:
+    environment:
+      - MYSQL_URL=postgresql://admin:admin@QResto_db:5432/root
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FRONT_URL=http://localhost:3001/
     volumes:
       - ./app:/code/
     stdin_open: true

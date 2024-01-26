@@ -11,8 +11,8 @@ class UpdatePriceAction(StrEnum):
 class SideDishData(BaseModel):
     side_dish_id: int = Field(alias="id")
     side_dish_name: str = Field(alias="name")
-    side_dish_description: str = Field(alias="description")
-    extra_price: float = Field(alias="extraPrice")
+    side_dish_description: str | None= Field(alias="description", default="")
+    extra_price: float | None = Field(alias="extraPrice", default=0.0)
 
     class Config:
         allow_population_by_field_name = True
@@ -51,3 +51,7 @@ class DishPricesDTO(BaseModel):
 class UpdatePrideCacheData(BaseModel):
     dish: Dish
     options: list[SideDishOptions]
+
+class MenuModel(BaseModel):
+    category: Category
+    dishes: list[DishData]
