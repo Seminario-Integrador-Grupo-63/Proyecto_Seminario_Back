@@ -6,6 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from sqlmodel import SQLModel  
+from utils.config import settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -15,6 +16,9 @@ config = context.config
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+SQLALCHEMY_DATABASE_URL = settings.MYSQL_URL
+config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 
 from models import OrderDetail, Restaurant, User, Category, Dish, SideDish, SideDishOptions, Table, Order, Waiter
 
