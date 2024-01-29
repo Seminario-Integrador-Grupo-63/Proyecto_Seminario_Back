@@ -7,5 +7,9 @@ mock_router = APIRouter(prefix="/mock", tags=["Mock"])
 @mock_router.post("/")
 async def create_mock():
     return create_mocks_2()
+<<<<<<< Updated upstream
     #return {"message": "deshabilitado temporalmente xD"}
+=======
+    # return {"message": "deshabilitado temporalmente xD"}
+>>>>>>> Stashed changes
 
