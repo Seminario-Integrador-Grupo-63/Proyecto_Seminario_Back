@@ -19,7 +19,7 @@ class SideDishData(BaseModel):
 
 class DishData(BaseModel):
     dish: Dish = Field(...)
-    options: list[SideDishData] = Field(...)
+    options: list[SideDishData] | list[int] = Field(...)
 
 class UpdatePriceData(BaseModel):
     percentage: float = Field(...)

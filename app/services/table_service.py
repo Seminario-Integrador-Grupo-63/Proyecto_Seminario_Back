@@ -1,9 +1,11 @@
 import base64
 from datetime import datetime, timedelta
 import io
+import json
 import os
 import uuid
-from fastapi import HTTPException
+from fastapi import HTTPException, Response, status
+from fastapi.encoders import jsonable_encoder
 
 import qrcode
 from PIL import Image
@@ -247,3 +249,11 @@ async def close_table(table_code: str):
         order.state = OrderState.closed
         db_service.update_object(Order, order)
     redis_service.delete_data(f"{table_code}_sitted")
+
+async def cancell_table(table_code:str):
+    table: Table = await get_table_by_code(table_code=table_code)
+    orders: list[FullOrderDTO] = await get_current_orders(table_code=table_code)
+    for order in orders:
+        if order.state == OrderState.delivered or order.state == OrderState.waiting:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No se puede cerrar la mesa por que tiene ordenes entregadas")
+    await change_table_state(table_code=table_code, current_state=table.state, new_state=TableState.free)

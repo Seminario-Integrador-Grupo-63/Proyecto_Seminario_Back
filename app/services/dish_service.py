@@ -7,10 +7,16 @@ from services.db_service import db_service
 from services.redis_service import redis_service
 
 
-async def create_new_dish(dish: Dish):
-    dish = db_service.create_object(dish)
+async def create_new_dish(dish: DishData):
+    dish_data: Dish = dish.dish
+    options_id: list[int] = dish.options
+    dish = db_service.create_object(dish_data)
+    for option_id in options_id:
+        side_dish_option = SideDishOptions(dish=dish.id, sideDish=option_id)   
+        db_service.create_object(side_dish_option) 
     side_dish_option = SideDishOptions(dish=dish.id)
     db_service.create_object(side_dish_option)
+
     return dish
 
 async def get_dish_data(dish_id: int):

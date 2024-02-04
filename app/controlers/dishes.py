@@ -15,7 +15,7 @@ async def get_dish(dish_id: int):
     return await get_dish_data(dish_id)
 
 @dish_router.post("/")
-async def create_dish(dish_body: Dish):
+async def create_dish(dish_body: DishData):
     return await create_new_dish(dish_body)
 
 @dish_router.put("/")
