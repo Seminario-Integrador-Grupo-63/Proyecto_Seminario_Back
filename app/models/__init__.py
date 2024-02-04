@@ -64,7 +64,7 @@ class SideDish(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
     description: Optional[bytes] = None 
-    image: Optional[bytes] = None
+    image: Optional[bytes] | None = None
     restaurant: int = Field(foreign_key="restaurant.id")
     is_active: bool | None = True
 

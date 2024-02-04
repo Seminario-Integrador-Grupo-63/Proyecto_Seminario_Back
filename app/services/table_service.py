@@ -254,6 +254,6 @@ async def cancell_table(table_code:str):
     table: Table = await get_table_by_code(table_code=table_code)
     orders: list[FullOrderDTO] = await get_current_orders(table_code=table_code)
     for order in orders:
-        if order.state == OrderState.delivered or order.state == OrderState.waiting:
+        if order.state == OrderState.delivered:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No se puede cerrar la mesa por que tiene ordenes entregadas")
     await change_table_state(table_code=table_code, current_state=table.state, new_state=TableState.free)
