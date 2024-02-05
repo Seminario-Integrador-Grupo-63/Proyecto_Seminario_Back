@@ -8,7 +8,7 @@ from services.security_service import *
 security_router = APIRouter(tags=["Security"], prefix="/security")
 
 @security_router.post("/signup")
-async def signup(registration_data: RegistrationData):
+async def signup(registration_data: User):
     return await create_user(registration_data)
 
 @security_router.post("/login")
