@@ -28,7 +28,7 @@ async def remove_sector(id:int):
     body.is_active = False
     db_service.update_object(SideDish,body)
 
-    statements = select(SideDishOptions).where(SideDishOptions.dish==id)
+    statements = select(SideDishOptions).where(SideDishOptions.side_dish==id)
     options: list[SideDishOptions] = db_service.get_with_filters(statements)
     for option in options:
         option.is_active = False

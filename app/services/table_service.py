@@ -256,4 +256,8 @@ async def cancell_table(table_code:str):
     for order in orders:
         if order.state == OrderState.delivered:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No se puede cerrar la mesa por que tiene ordenes entregadas")
+    for order in orders:    
+        order_data: Order = db_service.get_object_by_id(Order, order.id)
+        order_data.state = OrderState.cancelled
+        db_service.update_object(Order, order_data)
     await change_table_state(table_code=table_code, current_state=table.state, new_state=TableState.free)

@@ -42,11 +42,12 @@ async def get_dish_data(dish_id: int):
     for option in options:
         if option.side_dish:
             side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
-            side_dish_data = SideDishData(side_dish_id= side_dish.id, 
-                                        side_dish_name=side_dish.name,
-                                        side_dish_description=side_dish.description,
-                                        extra_price=option.extra_price)
-            side_dish_list.append(side_dish_data)
+            if side_dish.is_active:
+                side_dish_data = SideDishData(side_dish_id= side_dish.id, 
+                                            side_dish_name=side_dish.name,
+                                            side_dish_description=side_dish.description,
+                                            extra_price=option.extra_price)
+                side_dish_list.append(side_dish_data)
     return DishData(dish=dish, options=side_dish_list)
 
 async def update_all_dishes(update_data: UpdatePriceData):
@@ -105,7 +106,7 @@ async def get_new_prices(update_data: UpdatePriceData, dish_list: list[Dish]):
                 option_price_data = OptionPriceData(option_name=side_dish.name, option_price=option.extra_price)
                 options_prices_list.append(option_price_data)
 
-                dish_data = DishPriceData(dish_name=dish.name,dish_price=dish.price, option_prices=options_prices_list)
+                dish_data = DishPriceData(dish_name=f"{dish.name} + {side_dish.name}",dish_price=dish.price, option_prices=options_prices_list)
                 dish_prices_list.append(dish_data)
 
                 cache_data = UpdatePrideCacheData(dish=dish, options=sidedish_option_list)
