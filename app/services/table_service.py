@@ -21,12 +21,14 @@ from utils.config import settings
 
 
 async def get_table_by_code(table_code: str):
-    try:
-        statement = select(Table).where(Table.qr_id == table_code)
-        return db_service.get_with_filters(statement)[0]
-    except Exception as e:
-        message = f"No se pudo encontrar la mesa con codigo {table_code} error {e}"
-        raise Exception(message)
+    
+    statement = select(Table).where(Table.qr_id == table_code)
+    table = db_service.get_with_filters(statement) 
+    if table:
+        return table[0]
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la mesa no existe")  
+
     
 async def change_table_state(table_code:str, current_state: TableState, new_state: TableState):
     table: Table = await get_table_by_code(table_code=table_code)
@@ -216,10 +218,11 @@ async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:
         
 
 async def init_table(table_code: str, customer_name: str):
+    table: Table = await get_table_by_code(table_code=table_code)
     customers_sitted, saved = redis_service.save_set(f"{table_code}_sitted", customer_name)
 
     if not saved:
-        raise HTTPException(status_code=400, detail="Ese nombre pertenece a otro miembro de la mesa")
+        raise HTTPException(status_code=status.HTTP_226_IM_USED)
     else:
         await change_table_state(table_code, TableState.free, TableState.occupied)
     
