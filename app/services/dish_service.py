@@ -106,7 +106,7 @@ async def get_new_prices(update_data: UpdatePriceData, dish_list: list[Dish]):
                 option_price_data = OptionPriceData(option_name=side_dish.name, option_price=option.extra_price)
                 options_prices_list.append(option_price_data)
 
-                dish_data = DishPriceData(dish_name=f"{dish.name} + {side_dish.name}",dish_price=dish.price, option_prices=options_prices_list)
+                dish_data = DishPriceData(dish_name=f"{dish.name} + {side_dish.name}",dish_price=dish.price + new_option_price, option_prices=options_prices_list)
                 dish_prices_list.append(dish_data)
 
                 cache_data = UpdatePrideCacheData(dish=dish, options=sidedish_option_list)
