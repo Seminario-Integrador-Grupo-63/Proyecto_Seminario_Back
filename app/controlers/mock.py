@@ -7,4 +7,3 @@ mock_router = APIRouter(prefix="/mock", tags=["Mock"])
 @mock_router.post("/")
 async def create_mock():
     return await create_mocks_2()
-    # return {"message": "deshabilitado temporalmente xD"}
