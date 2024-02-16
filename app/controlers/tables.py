@@ -79,8 +79,12 @@ async def get_table_billing(table_code: str):
 async def billing_confirmation(table_code: str):
     return await close_table(table_code=table_code)
 
-@table_router.post("/{table_code}/init")
+@table_router.post("/{table_code}/init", status_code=200)
 async def init_tables(customer_name:str, table_code:str):
     return await init_table(table_code=table_code, customer_name=customer_name)
+
+@table_router.post("/{table_code}/cancell")
+async def table_cancelation(table_code: str):
+    return await cancell_table(table_code=table_code)
 
 

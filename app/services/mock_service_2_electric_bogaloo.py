@@ -12,14 +12,17 @@ def encode_image(image_path: str):
         encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
         return f"data:image/jpeg;base64,{encoded_string}"
 
-def create_mocks_2():
-    models_list = [User,OrderDetail, SideDishOptions, Dish, SideDish, Waiter, Order,Table, Category, TableSector, Restaurant]
+async def create_mocks_2():
+    models_list = [User,OrderDetail, SideDishOptions, Dish, SideDish, Waiter, Order,Table, Category, TableSector]
     for model in models_list:
         db_service.delete_dable(model)
 
-    
-    restaurant_1 = Restaurant(name = "QResto", last_name = "Test")
-    restaurant_1: Restaurant = db_service.create_object(restaurant_1)
+    restaurant: Restaurant = db_service.get_list_from_db(model=Restaurant)
+    if not restaurant:    
+        restaurant_1 = Restaurant(name = "QResto", last_name = "Test")
+        restaurant_1: Restaurant = db_service.create_object(restaurant_1)
+    else:
+        restaurant_1 = restaurant[0]
 
     user_admin = User(user="admin", password="admin", email="qresto@gmail.com", role="admin", restaurant=restaurant_1.id)
     user_employee = User(user="Mozo", password="admin", email="qresto@gmail.com", role="employee", restaurant=restaurant_1.id)
@@ -27,7 +30,22 @@ def create_mocks_2():
     db_service.create_object(user_admin)
     db_service.create_object(user_employee)
 
-    auxiliar_list = option_aux
+    auxiliar_list = {
+    "Muzarella": [], 
+    "Especial": [],
+    "Cuatro Quesos": [],
+    "Sandwich de lomo": [],
+    "Sandwich de milanesa": [],
+    "Hamburguesa Gourmet": [],
+    "Milanesa": [],
+    "Bife de chorizo": [],
+    "Corte del dia": [],
+    "Plato de ravioles": [],
+    "Plato de Gnocchi": [],
+    "Gaseosa linea Coca": [],
+    "Agua saborizada": [],
+    "Bocha de helado": []
+}
 
     for side_dish in SideDish_resource:
         sd = SideDish(name=side_dish["name"], restaurant=restaurant_1.id)

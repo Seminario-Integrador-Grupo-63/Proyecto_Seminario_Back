@@ -1,9 +1,11 @@
 import base64
 from datetime import datetime, timedelta
 import io
+import json
 import os
 import uuid
-from fastapi import HTTPException
+from fastapi import HTTPException, Response, status
+from fastapi.encoders import jsonable_encoder
 
 import qrcode
 from PIL import Image
@@ -19,12 +21,14 @@ from utils.config import settings
 
 
 async def get_table_by_code(table_code: str):
-    try:
-        statement = select(Table).where(Table.qr_id == table_code)
-        return db_service.get_with_filters(statement)[0]
-    except Exception as e:
-        message = f"No se pudo encontrar la mesa con codigo {table_code} error {e}"
-        raise Exception(message)
+    
+    statement = select(Table).where(Table.qr_id == table_code)
+    table = db_service.get_with_filters(statement) 
+    if table:
+        return table[0]
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la mesa no existe")  
+
     
 async def change_table_state(table_code:str, current_state: TableState, new_state: TableState):
     table: Table = await get_table_by_code(table_code=table_code)
@@ -38,7 +42,7 @@ async def generate_qrcode(table_id: int):
     uuid_code = str(uuid.uuid4())
     
     # url = f'https://654d8f47be3cf11149bbf4bd--genuine-bavarois-cc292a.netlify.app/' + f'?table_code={uuid_code}' #cambiar cuando tengamos variables de entorno
-    url = f'{settings.FRONT_URL}?table_code={uuid_code}'
+    url = f'{settings.FRONT_URL}?table-code={uuid_code}'
     
     qr = qrcode.QRCode(version=4, box_size=140, border=2)
     qr.add_data(url)
@@ -214,10 +218,11 @@ async def generate_billing(table_code: str) -> list[CustomerOrderDetailData]:
         
 
 async def init_table(table_code: str, customer_name: str):
+    table: Table = await get_table_by_code(table_code=table_code)
     customers_sitted, saved = redis_service.save_set(f"{table_code}_sitted", customer_name)
 
     if not saved:
-        raise HTTPException(status_code=400, detail="Ese nombre pertenece a otro miembro de la mesa")
+        raise HTTPException(status_code=status.HTTP_226_IM_USED)
     else:
         await change_table_state(table_code, TableState.free, TableState.occupied)
     
@@ -247,3 +252,15 @@ async def close_table(table_code: str):
         order.state = OrderState.closed
         db_service.update_object(Order, order)
     redis_service.delete_data(f"{table_code}_sitted")
+
+async def cancell_table(table_code:str):
+    table: Table = await get_table_by_code(table_code=table_code)
+    orders: list[FullOrderDTO] = await get_current_orders(table_code=table_code)
+    for order in orders:
+        if order.state == OrderState.delivered:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No se puede cerrar la mesa por que tiene ordenes entregadas")
+    for order in orders:    
+        order_data: Order = db_service.get_object_by_id(Order, order.id)
+        order_data.state = OrderState.cancelled
+        db_service.update_object(Order, order_data)
+    await change_table_state(table_code=table_code, current_state=table.state, new_state=TableState.free)

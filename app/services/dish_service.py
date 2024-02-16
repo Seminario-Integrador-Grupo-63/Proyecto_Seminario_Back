@@ -7,11 +7,32 @@ from services.db_service import db_service
 from services.redis_service import redis_service
 
 
-async def create_new_dish(dish: Dish):
-    dish = db_service.create_object(dish)
+async def create_new_dish(dish: DishData):
+    dish_data: Dish = dish.dish
+    options_id: list[int] = dish.options
+    dish = db_service.create_object(dish_data)
+    for option_id in options_id:
+        side_dish_option = SideDishOptions(dish=dish.id, sideDish=option_id)   
+        db_service.create_object(side_dish_option) 
     side_dish_option = SideDishOptions(dish=dish.id)
     db_service.create_object(side_dish_option)
+
     return dish
+
+async def update_dish_data(dish: DishData):
+    dish_data: Dish = dish.dish
+    options_id: list[int] = dish.options
+    dish = db_service.update_object(Dish, dish_data)
+    statement = select(SideDishOptions).where(SideDishOptions.dish==dish.id)
+    side_dish_options: list[SideDishOptions] = db_service.get_with_filters(statement)
+    for side_dish_option in side_dish_options:
+        if side_dish_option.side_dish in options_id:
+           options_id.remove(side_dish_option.side_dish)
+        else:
+            db_service.delete_row(SideDishOptions, [SideDishOptions.side_dish==side_dish_option.side_dish]) 
+    for option_id in options_id:
+        side_dish_option = SideDishOptions(dish=dish.id, sideDish=option_id)   
+        db_service.create_object(side_dish_option) 
 
 async def get_dish_data(dish_id: int):
     statement = select(SideDishOptions).where(SideDishOptions.dish == dish_id, SideDishOptions.is_active == True) 
@@ -21,11 +42,12 @@ async def get_dish_data(dish_id: int):
     for option in options:
         if option.side_dish:
             side_dish: SideDish = db_service.get_object_by_id(SideDish, option.side_dish)
-            side_dish_data = SideDishData(side_dish_id= side_dish.id, 
-                                        side_dish_name=side_dish.name,
-                                        side_dish_description=side_dish.description,
-                                        extra_price=option.extra_price)
-            side_dish_list.append(side_dish_data)
+            if side_dish.is_active:
+                side_dish_data = SideDishData(side_dish_id= side_dish.id, 
+                                            side_dish_name=side_dish.name,
+                                            side_dish_description=side_dish.description,
+                                            extra_price=option.extra_price)
+                side_dish_list.append(side_dish_data)
     return DishData(dish=dish, options=side_dish_list)
 
 async def update_all_dishes(update_data: UpdatePriceData):
@@ -84,7 +106,7 @@ async def get_new_prices(update_data: UpdatePriceData, dish_list: list[Dish]):
                 option_price_data = OptionPriceData(option_name=side_dish.name, option_price=option.extra_price)
                 options_prices_list.append(option_price_data)
 
-                dish_data = DishPriceData(dish_name=dish.name,dish_price=dish.price, option_prices=options_prices_list)
+                dish_data = DishPriceData(dish_name=f"{dish.name} + {side_dish.name}",dish_price=dish.price + new_option_price, option_prices=options_prices_list)
                 dish_prices_list.append(dish_data)
 
                 cache_data = UpdatePrideCacheData(dish=dish, options=sidedish_option_list)
@@ -112,6 +134,7 @@ async def confirm_new_prices(uuid_code: str):
         db_service.update_object(model=Dish, body=dish)
         for option in option_list:
             db_service.update_object(model=SideDishOptions, body=option)
+    redis_service.delete_data(uuid_code)
 
 async def get_menu(restaurant_id: int):
     data = []

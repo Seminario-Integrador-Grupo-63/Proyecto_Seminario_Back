@@ -20,21 +20,17 @@ async def create_admin(registration_data: RegistrationData):
     except Exception as e:
         return e
 
-async def create_employee(registration_data: RegistrationData):
+async def create_employee(user: User):
     try:
-        user: User = registration_data.user_data
-        restaurant_data: Restaurant = registration_data.restorant_data
-        user.restaurant = restaurant_data.id
-        db_service.create_object(user)
+        return db_service.create_object(user)
     except Exception as e:
         return e
 
-async def create_user(registration_data: RegistrationData):
-    user: User = registration_data.user_data
+async def create_user(user: User):
     if user.role == UserRolesEnum.admin:
-        return await create_admin(registration_data)
-    elif User.role == UserRolesEnum.employee:
-        return await create_employee(registration_data)
+        return await create_admin(user)
+    elif user.role == UserRolesEnum.employee:
+        return await create_employee(user)
     else:
         ...
 

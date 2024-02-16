@@ -15,12 +15,12 @@ async def get_dish(dish_id: int):
     return await get_dish_data(dish_id)
 
 @dish_router.post("/")
-async def create_dish(dish_body: Dish):
+async def create_dish(dish_body: DishData):
     return await create_new_dish(dish_body)
 
 @dish_router.put("/")
-async def update_dish(dish_body: Dish):
-    return db_service.update_object(Dish, dish_body)
+async def update_dish(dish_body: DishData):
+    return await update_dish_data(dish_body)
 
 @dish_router.post("/update_prices")
 async def update_prices(body: UpdatePriceData, restaurant_id: int = Header(default=None)):
